@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Машин Зарах Вэбсайт</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+        }
+        /* Custom scrollbar for filter bar if needed on desktop, though mainly targeting mobile view */
+        .filter-scroll::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+        }
+        .filter-scroll {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Header / Filter Bar (Fixed at the top like in the screenshot) -->
+    <header class="sticky top-0 z-10 bg-white shadow-sm">
+        <div class="filter-scroll flex overflow-x-auto whitespace-nowrap px-4 py-3 border-b">
+            <!-- Filter Buttons -->
+            <button class="flex-shrink-0 bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-full mr-2 shadow-md">
+                <span class="mr-1">🚗</span> Нийт нөхцөл
+            </button>
+            <button class="flex-shrink-0 text-gray-700 bg-gray-100 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-200 transition duration-150">
+                Үйлдвэрлэсэн он
+            </button>
+            <button class="flex-shrink-0 text-gray-700 bg-gray-100 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-200 transition duration-150">
+                Гүйлтийн зай
+            </button>
+            <button class="flex-shrink-0 text-gray-700 bg-gray-100 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-200 transition duration-150">
+                Үнэ
+            </button>
+            <button class="flex-shrink-0 text-gray-700 bg-gray-100 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-200 transition duration-150">
+                Бүс/Хот
+            </button>
+            <button class="flex-shrink-0 text-gray-700 bg-gray-100 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-200 transition duration-150">
+                Түлшний төрөл
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area: Car Listings -->
+    <main class="p-4 space-y-6">
+
+        <!-- Car Listing Card 1 (Mimicking the top card in the image) -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+            <!-- Image Carousel Placeholder -->
+            <div class="relative w-full h-48 bg-gray-200 flex items-center justify-center">
+                <!-- Placeholder Image (Replace with actual car image URL) -->
+                <img src="https://placehold.co/600x300/e5e7eb/6b7280?text=ES300h+Машин+Зураг" 
+                     onerror="this.onerror=null;this.src='https://placehold.co/600x300/e5e7eb/6b7280?text=Зураг+Олдсонгүй'"
+                     alt="Lexus ES300h" class="w-full h-full object-cover">
+                
+                <!-- Status/Badge -->
+                <div class="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                    Баталгаат шалгалт
+                </div>
+                
+                <!-- Favorite Icon -->
+                <button class="absolute top-3 right-3 p-2 text-white bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 transition duration-200" aria-label="Хадгалах">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="white" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </button>
+
+                <!-- Small Info Chip -->
+                <div class="absolute bottom-3 left-3 flex items-center bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full">
+                    <span class="mr-1">✅</span> Энкар Баталгаатай
+                </div>
+
+                <!-- Carousel Dots Placeholder -->
+                <div class="absolute top-3 right-1/2 transform translate-x-1/2 flex space-x-1">
+                    <div class="w-1.5 h-1.5 bg-white rounded-full opacity-100"></div>
+                    <div class="w-1.5 h-1.5 bg-white rounded-full opacity-50"></div>
+                    <div class="w-1.5 h-1.5 bg-white rounded-full opacity-50"></div>
+                </div>
+
+            </div>
+
+            <!-- Details Section -->
+            <div class="p-4">
+                <h2 class="text-xl font-semibold mb-2 text-gray-900">
+                    <a href="#" class="hover:text-red-600 transition duration-150">
+                        ES300h 7-р үеийн Тансаг зэрэглэлийн Плюс
+                    </a>
+                </h2>
+                
+                <div class="flex items-center text-sm text-gray-500 mb-3 space-x-3 divide-x divide-gray-300">
+                    <span>19/05 он</span>
+                    <span class="pl-3">78,286 км</span>
+                    <span class="pl-3">Бензин + Цахилгаан</span>
+                    <span class="pl-3">Автомат</span>
+                </div>
+
+                <p class="text-3xl font-extrabold text-red-600 mb-2">
+                    38.800.000 ₮
+                </p>
+
+                <p class="text-sm text-gray-600 flex items-center">
+                    <span class="w-2 h-2 bg-yellow-600 rounded-full mr-2"></span> Шаргал өнгийн суудлын бүрээс
+                </p>
+            </div>
+        </div>
+        
+        <!-- Car Listing Card 2 (Mimicking the bottom card in the image) -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+            <!-- Image Carousel Placeholder -->
+            <div class="relative w-full h-48 bg-gray-200 flex items-center justify-center">
+                <!-- Placeholder Image (Replace with actual car image URL) -->
+                <img src="https://placehold.co/600x300/4b5563/d1d5db?text=NX350h+Машин+Зураг" 
+                     onerror="this.onerror=null;this.src='https://placehold.co/600x300/4b5563/d1d5db?text=Зураг+Олдсонгүй'"
+                     alt="Lexus NX350h" class="w-full h-full object-cover">
+                
+                <!-- Status/Badge -->
+                <div class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                    Баталгаат шалгалт ++
+                </div>
+                
+                <!-- Favorite Icon -->
+                <button class="absolute top-3 right-3 p-2 text-white bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 transition duration-200" aria-label="Хадгалах">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="white" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </button>
+
+                <!-- Small Info Chip -->
+                <div class="absolute bottom-3 left-3 flex items-center bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full">
+                    <span class="mr-1">ℹ️</span> Бүрэн ослын түүхгүй / 1 эзэмшигч
+                </div>
+
+                <!-- Carousel Dots Placeholder -->
+                <div class="absolute top-3 right-1/2 transform translate-x-1/2 flex space-x-1">
+                    <div class="w-1.5 h-1.5 bg-white rounded-full opacity-50"></div>
+                    <div class="w-1.5 h-1.5 bg-white rounded-full opacity-100"></div>
+                    <div class="w-1.5 h-1.5 bg-white rounded-full opacity-50"></div>
+                </div>
+            </div>
+
+            <!-- Details Section -->
+            <div class="p-4">
+                <h2 class="text-xl font-semibold mb-2 text-gray-900">
+                    <a href="#" class="hover:text-red-600 transition duration-150">
+                        NX350h 2-р үеийн Дээд зэрэглэлийн
+                    </a>
+                </h2>
+                
+                <div class="flex items-center text-sm text-gray-500 mb-3 space-x-3 divide-x divide-gray-300">
+                    <span>23/10 он (24 загвар)</span>
+                    <span class="pl-3">31,960 км</span>
+                    <span class="pl-3">Бензин + Цахилгаан</span>
+                    <span class="pl-3">Автомат</span>
+                </div>
+
+                <p class="text-3xl font-extrabold text-red-600 mb-2">
+                    69.000.000 ₮
+                </p>
+
+                <p class="text-sm text-gray-600 flex items-center">
+                    <span class="w-2 h-2 bg-gray-900 rounded-full mr-2"></span> Хар өнгийн суудлын бүрээс
+                </p>
+            </div>
+        </div>
+
+        <!-- More Listings Placeholder -->
+        <div class="text-center py-8 text-gray-500">
+            <p>Дахин 10 машины зар байна.</p>
+            <button class="mt-3 text-red-600 font-medium border border-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition duration-150">
+                Нэмж үзэх
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Simple Footer (optional, but good practice) -->
+    <footer class="text-center text-xs text-gray-400 py-4 mt-8 border-t">
+        © 2024 Машин Зарах Платформ. Бүх эрх хуулиар хамгаалагдсан.
+    </footer>
+
+</body>
+</html>
