@@ -147,8 +147,8 @@
                         </button>
                     </div>
                     
-                    <!-- Submit Button -->
-                    <button type="submit" class="w-full bg-red-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-150">
+                    <!-- Submit Button - Disabled by default -->
+                    <button type="submit" id="submit-car-btn" class="w-full bg-red-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-150 disabled:opacity-50" disabled>
                         Зар Нэмэх
                     </button>
                 </form>
@@ -180,6 +180,9 @@
         let auth;
         let userId = null;
         let isAuthenticated = false;
+
+        // Get submit button reference early
+        const submitButton = document.getElementById('submit-car-btn');
 
         // --- Utility Functions ---
 
@@ -294,10 +297,21 @@
                 if (user) {
                     userId = user.uid;
                     isAuthenticated = true;
+                    // Enable submit button after successful authentication
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Зар Нэмэх';
+                    }
                     // Start fetching data and attach listeners once authenticated
                     setupRealtimeListener();
                 } else {
+                    userId = null;
                     isAuthenticated = false;
+                    // Show authentication status on button
+                    if (submitButton) {
+                        submitButton.disabled = true;
+                        submitButton.textContent = 'Нэвтрэлт Хүлээж Байна...';
+                    }
                     authenticate(); // Try to sign in again if signed out
                 }
             });
@@ -344,6 +358,10 @@
                 return;
             }
 
+            // Temporarily disable button and show loading text
+            submitButton.disabled = true;
+            submitButton.textContent = 'Оруулж байна...';
+
             const carData = {
                 manufacturer: formData.manufacturer,
                 model: formData.model,
@@ -364,6 +382,10 @@
                 closeModal();
             } catch (error) {
                 showCustomAlert(`Зар хадгалах алдаа: ${error.message}`);
+            } finally {
+                // Re-enable button and reset text
+                submitButton.disabled = false;
+                submitButton.textContent = 'Зар Нэмэх';
             }
         }
         
