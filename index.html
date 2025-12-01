@@ -12,178 +12,396 @@
             font-family: 'Inter', sans-serif;
             background-color: #f7f7f7;
         }
-        /* Custom scrollbar for filter bar if needed on desktop, though mainly targeting mobile view */
         .filter-scroll::-webkit-scrollbar {
-            display: none; /* Hide scrollbar for Chrome, Safari and Opera */
+            display: none;
         }
         .filter-scroll {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-    <!-- Header / Filter Bar (Fixed at the top like in the screenshot) -->
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // IMPORTANT: Global variables provided by the Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        if (Object.keys(firebaseConfig).length > 0) {
+            setLogLevel('Debug');
+            window.app = initializeApp(firebaseConfig);
+            window.db = getFirestore(window.app);
+            window.auth = getAuth(window.app);
+        } else {
+            console.error("Firebase Configuration is missing.");
+        }
+
+        let userId = null;
+
+        // 1. Authentication
+        async function authenticate() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(window.auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(window.auth);
+                }
+            } catch (error) {
+                console.error("Firebase Authentication Error:", error);
+            }
+        }
+
+        // 2. Data Fetching and Rendering
+        function setupDataListener() {
+            if (!window.db) return;
+            const carsCollectionPath = `/artifacts/${appId}/public/data/cars`;
+            const q = query(collection(window.db, carsCollectionPath));
+
+            onSnapshot(q, (snapshot) => {
+                const cars = [];
+                snapshot.forEach((doc) => {
+                    cars.push({ id: doc.id, ...doc.data() });
+                });
+                renderCarListings(cars);
+            }, (error) => {
+                console.error("Firestore Snapshot Error:", error);
+            });
+        }
+
+        // 3. Render function
+        function renderCarListings(cars) {
+            const container = document.getElementById('car-listings');
+            container.innerHTML = ''; // Clear existing content
+
+            if (cars.length === 0) {
+                container.innerHTML = '<div class="text-center py-12 text-gray-500 bg-white rounded-xl shadow-lg col-span-full"><p class="text-xl font-medium">Одоогоор зар оруулаагүй байна.</p><p class="mt-2">"Зар Оруулах" товчийг дарж анхны машинаа нэмнэ үү.</p></div>';
+                return;
+            }
+
+            cars.forEach(car => {
+                const priceFormatted = new Intl.NumberFormat('mn-MN', { style: 'currency', currency: 'MNT', minimumFractionDigits: 0 }).format(car.price * 1000000).replace('₮', ' ₮'); // Assume price is in millions (сая)
+                
+                const carCard = document.createElement('div');
+                carCard.className = 'bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transform transition duration-300 hover:shadow-xl hover:-translate-y-0.5';
+                
+                // Use the poster's first name/initials for the badge if available
+                const posterName = car.posterId === userId ? "Та" : car.posterId.substring(0, 8); 
+                const posterBadge = car.posterId === userId ? 'bg-green-600' : 'bg-gray-700';
+                
+                // Determine image source: prioritize Base64 data over URL link
+                const imageSource = car.imageData 
+                    ? car.imageData 
+                    : (car.imageUrl || 'https://placehold.co/600x300/e5e7eb/6b7280?text=Зураг+Олдсонгүй');
+
+                carCard.innerHTML = `
+                    <div class="relative w-full h-48 bg-gray-200 flex items-center justify-center">
+                        <img src="${imageSource}" 
+                             onerror="this.onerror=null;this.src='https://placehold.co/600x300/e5e7eb/6b7280?text=Зураг+Олдсонгүй'"
+                             alt="${car.model}" class="w-full h-full object-cover">
+                        
+                        <div class="absolute top-3 left-3 ${posterBadge} text-white text-xs font-bold px-3 py-1 rounded-full shadow">
+                            Зарлагч: ${posterName}
+                        </div>
+                        
+                        <button class="absolute top-3 right-3 p-2 text-white bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 transition duration-200" aria-label="Хадгалах">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="white" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="p-4">
+                        <h2 class="text-xl font-semibold mb-2 text-gray-900">
+                            ${car.manufacturer} ${car.model}
+                        </h2>
+                        
+                        <div class="flex items-center text-sm text-gray-500 mb-3 space-x-3 divide-x divide-gray-300">
+                            <span>${car.year} он</span>
+                            <span class="pl-3">${new Intl.NumberFormat('mn-MN').format(car.mileage)} км</span>
+                            <span class="pl-3">${car.fuelType}</span>
+                        </div>
+
+                        <p class="text-3xl font-extrabold text-red-600 mb-2">
+                            ${priceFormatted}
+                        </p>
+
+                        <p class="text-sm text-gray-600 flex items-center">
+                            <span class="w-2 h-2 bg-gray-500 rounded-full mr-2"></span> ${car.description || 'Дэлгэрэнгүй мэдээлэлгүй'}
+                        </p>
+                    </div>
+                `;
+                container.appendChild(carCard);
+            });
+        }
+
+        // 4. Save Car function
+        async function saveCar(data) {
+            if (!window.db) return;
+            const carsCollectionPath = `/artifacts/${appId}/public/data/cars`;
+            
+            try {
+                // Attach the current user's ID
+                const carData = {
+                    ...data,
+                    posterId: userId,
+                    createdAt: new Date(),
+                    price: parseFloat(data.price) // Convert price to number (millions)
+                };
+
+                await addDoc(collection(window.db, carsCollectionPath), carData);
+                closeModal();
+                showCustomAlert('Таны зар амжилттай нэмэгдлээ!', 'success');
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showCustomAlert('Зар нэмэхэд алдаа гарлаа: ' + e.message, 'error');
+            }
+        }
+        
+        // **Утилити функц: Файлыг Base64 руу хөрвүүлэх**
+        function fileToBase64(file) {
+            if (file.size > 800 * 1024) { // Warning limit for 1MB Firestore size limit
+                return Promise.reject(new Error("Файлын хэмжээ хэтэрхий том (800KB-аас бага байх ёстой)."));
+            }
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 5. Custom Alert/Modal functions (since window.alert is forbidden)
+        function showCustomAlert(message, type = 'info') {
+            const alertBox = document.getElementById('custom-alert');
+            const alertMessage = document.getElementById('alert-message');
+            const alertIcon = document.getElementById('alert-icon');
+            
+            alertMessage.textContent = message;
+            alertBox.className = `fixed bottom-4 left-1/2 transform -translate-x-1/2 p-4 rounded-lg shadow-2xl z-50 transition-opacity duration-300 ${type === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white`;
+            
+            if (type === 'success') {
+                alertIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+            } else {
+                 alertIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+            }
+            
+            alertBox.style.opacity = 1;
+            setTimeout(() => {
+                alertBox.style.opacity = 0;
+            }, 3000);
+        }
+
+        function openModal() {
+            document.getElementById('add-car-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('add-car-modal').classList.add('hidden');
+            document.getElementById('add-car-form').reset(); // Clear form on close
+        }
+
+        // 6. Event Listeners and Initialization
+        onAuthStateChanged(window.auth, (user) => {
+            if (user) {
+                userId = user.uid;
+                document.getElementById('user-id-display').textContent = `Хэрэглэгчийн ID: ${userId.substring(0, 8)}...`;
+                setupDataListener();
+            } else {
+                console.log("No user signed in.");
+            }
+        });
+        
+        if (Object.keys(firebaseConfig).length > 0) {
+            authenticate();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup form submission
+            document.getElementById('add-car-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const form = e.target;
+                const formData = new FormData(form);
+                const carData = {};
+                formData.forEach((value, key) => { carData[key] = value; });
+
+                // 1. Handle File Upload (Image)
+                const imageFile = form.querySelector('#carImageFile').files[0];
+                let imageDataUri = null;
+
+                if (imageFile) {
+                    try {
+                        // Async reading of file and conversion to Base64
+                        imageDataUri = await fileToBase64(imageFile);
+                    } catch (error) {
+                        console.error("File reading error:", error);
+                        showCustomAlert(error.message, 'error');
+                        return;
+                    }
+                }
+                
+                // 2. Data Validation
+                if (isNaN(parseFloat(carData.price)) || parseFloat(carData.price) <= 0) {
+                    showCustomAlert('Үнийг зөв (Сая төгрөгөөр) оруулна уу.', 'error');
+                    return;
+                }
+                if (isNaN(parseInt(carData.mileage))) {
+                     showCustomAlert('Гүйлтийн зайг зөв оруулна уу.', 'error');
+                    return;
+                }
+
+                // 3. Prepare Final Data
+                const finalCarData = {
+                    manufacturer: carData.manufacturer,
+                    model: carData.model,
+                    year: carData.year,
+                    mileage: carData.mileage,
+                    price: carData.price,
+                    fuelType: carData.fuelType,
+                    description: carData.description,
+                    imageData: imageDataUri, // Store Base64 string here
+                    // imageUrl талбарыг File upload ашиглаж байгаа тул хасав
+                };
+                
+                // 4. Save
+                saveCar(finalCarData);
+            });
+
+            // Open/Close modal listeners
+            document.getElementById('open-modal-btn').addEventListener('click', openModal);
+            document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+            document.getElementById('modal-overlay').addEventListener('click', closeModal);
+        });
+    </script>
+    
+    <!-- Custom Alert Container -->
+    <div id="custom-alert" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 p-4 rounded-lg shadow-2xl z-50 transition-opacity duration-300 opacity-0" style="min-width: 300px;">
+        <div class="flex items-center space-x-2">
+            <span id="alert-icon"></span>
+            <span id="alert-message" class="font-medium"></span>
+        </div>
+    </div>
+
+    <!-- Header / Filter Bar -->
     <header class="sticky top-0 z-10 bg-white shadow-sm">
-        <div class="filter-scroll flex overflow-x-auto whitespace-nowrap px-4 py-3 border-b">
-            <!-- Filter Buttons -->
+        <div class="flex items-center justify-between px-4 py-3 border-b">
+            <div class="text-xl font-bold text-red-600">
+                CarsMongolia.mn
+            </div>
+            
+            <div class="flex space-x-4 items-center">
+                <span id="user-id-display" class="text-sm text-gray-500 hidden sm:block"></span>
+                <button id="open-modal-btn" class="bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-md hover:bg-red-700 transition duration-150">
+                    <span class="mr-1">➕</span> Зар Оруулах
+                </button>
+            </div>
+        </div>
+        
+        <div class="filter-scroll flex overflow-x-auto whitespace-nowrap px-4 py-3 border-b bg-gray-100">
+            <!-- Filter Buttons - Will not function without full backend logic -->
             <button class="flex-shrink-0 bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-full mr-2 shadow-md">
                 <span class="mr-1">🚗</span> Нийт нөхцөл
             </button>
-            <button class="flex-shrink-0 text-gray-700 bg-gray-100 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-200 transition duration-150">
+            <button class="flex-shrink-0 text-gray-700 bg-gray-200 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-300 transition duration-150">
                 Үйлдвэрлэсэн он
             </button>
-            <button class="flex-shrink-0 text-gray-700 bg-gray-100 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-200 transition duration-150">
-                Гүйлтийн зай
-            </button>
-            <button class="flex-shrink-0 text-gray-700 bg-gray-100 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-200 transition duration-150">
+            <button class="flex-shrink-0 text-gray-700 bg-gray-200 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-300 transition duration-150">
                 Үнэ
             </button>
-            <button class="flex-shrink-0 text-gray-700 bg-gray-100 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-200 transition duration-150">
-                Бүс/Хот
-            </button>
-            <button class="flex-shrink-0 text-gray-700 bg-gray-100 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-200 transition duration-150">
+            <button class="flex-shrink-0 text-gray-700 bg-gray-200 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-300 transition duration-150">
                 Түлшний төрөл
             </button>
         </div>
     </header>
 
-    <!-- Main Content Area: Car Listings -->
-    <main class="p-4 space-y-6">
-
-        <!-- Car Listing Card 1 (Mimicking the top card in the image) -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-            <!-- Image Carousel Placeholder -->
-            <div class="relative w-full h-48 bg-gray-200 flex items-center justify-center">
-                <!-- Placeholder Image (Replace with actual car image URL) -->
-                <img src="https://placehold.co/600x300/e5e7eb/6b7280?text=ES300h+Машин+Зураг" 
-                     onerror="this.onerror=null;this.src='https://placehold.co/600x300/e5e7eb/6b7280?text=Зураг+Олдсонгүй'"
-                     alt="Lexus ES300h" class="w-full h-full object-cover">
-                
-                <!-- Status/Badge -->
-                <div class="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-                    Баталгаат шалгалт
-                </div>
-                
-                <!-- Favorite Icon -->
-                <button class="absolute top-3 right-3 p-2 text-white bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 transition duration-200" aria-label="Хадгалах">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="white" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                </button>
-
-                <!-- Small Info Chip -->
-                <div class="absolute bottom-3 left-3 flex items-center bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full">
-                    <span class="mr-1">✅</span> Энкар Баталгаатай
-                </div>
-
-                <!-- Carousel Dots Placeholder -->
-                <div class="absolute top-3 right-1/2 transform translate-x-1/2 flex space-x-1">
-                    <div class="w-1.5 h-1.5 bg-white rounded-full opacity-100"></div>
-                    <div class="w-1.5 h-1.5 bg-white rounded-full opacity-50"></div>
-                    <div class="w-1.5 h-1.5 bg-white rounded-full opacity-50"></div>
-                </div>
-
-            </div>
-
-            <!-- Details Section -->
-            <div class="p-4">
-                <h2 class="text-xl font-semibold mb-2 text-gray-900">
-                    <a href="#" class="hover:text-red-600 transition duration-150">
-                        ES300h 7-р үеийн Тансаг зэрэглэлийн Плюс
-                    </a>
-                </h2>
-                
-                <div class="flex items-center text-sm text-gray-500 mb-3 space-x-3 divide-x divide-gray-300">
-                    <span>19/05 он</span>
-                    <span class="pl-3">78,286 км</span>
-                    <span class="pl-3">Бензин + Цахилгаан</span>
-                    <span class="pl-3">Автомат</span>
-                </div>
-
-                <p class="text-3xl font-extrabold text-red-600 mb-2">
-                    38.800.000 ₮
-                </p>
-
-                <p class="text-sm text-gray-600 flex items-center">
-                    <span class="w-2 h-2 bg-yellow-600 rounded-full mr-2"></span> Шаргал өнгийн суудлын бүрээс
-                </p>
+    <!-- Main Content Area: Dynamic Car Listings Container -->
+    <main class="p-4">
+        <div id="car-listings" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <!-- Cars will be rendered here by JavaScript -->
+            <div class="text-center py-12 text-gray-500 bg-white rounded-xl shadow-lg col-span-full">
+                <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1v-3.25m-7.25 0h14.5a.75.75 0 00.75-.75V8.75a.75.75 0 00-.75-.75h-14.5a.75.75 0 00-.75.75v7.5c0 .414.336.75.75.75zM12 4.5a.5.5 0 100 1 .5.5 0 000-1z" />
+                </svg>
+                <p class="mt-2 text-sm font-medium text-gray-900">Мэдээлэл дуудаж байна...</p>
             </div>
         </div>
-        
-        <!-- Car Listing Card 2 (Mimicking the bottom card in the image) -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
-            <!-- Image Carousel Placeholder -->
-            <div class="relative w-full h-48 bg-gray-200 flex items-center justify-center">
-                <!-- Placeholder Image (Replace with actual car image URL) -->
-                <img src="https://placehold.co/600x300/4b5563/d1d5db?text=NX350h+Машин+Зураг" 
-                     onerror="this.onerror=null;this.src='https://placehold.co/600x300/4b5563/d1d5db?text=Зураг+Олдсонгүй'"
-                     alt="Lexus NX350h" class="w-full h-full object-cover">
-                
-                <!-- Status/Badge -->
-                <div class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-                    Баталгаат шалгалт ++
-                </div>
-                
-                <!-- Favorite Icon -->
-                <button class="absolute top-3 right-3 p-2 text-white bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 transition duration-200" aria-label="Хадгалах">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="white" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                </button>
-
-                <!-- Small Info Chip -->
-                <div class="absolute bottom-3 left-3 flex items-center bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full">
-                    <span class="mr-1">ℹ️</span> Бүрэн ослын түүхгүй / 1 эзэмшигч
-                </div>
-
-                <!-- Carousel Dots Placeholder -->
-                <div class="absolute top-3 right-1/2 transform translate-x-1/2 flex space-x-1">
-                    <div class="w-1.5 h-1.5 bg-white rounded-full opacity-50"></div>
-                    <div class="w-1.5 h-1.5 bg-white rounded-full opacity-100"></div>
-                    <div class="w-1.5 h-1.5 bg-white rounded-full opacity-50"></div>
-                </div>
-            </div>
-
-            <!-- Details Section -->
-            <div class="p-4">
-                <h2 class="text-xl font-semibold mb-2 text-gray-900">
-                    <a href="#" class="hover:text-red-600 transition duration-150">
-                        NX350h 2-р үеийн Дээд зэрэглэлийн
-                    </a>
-                </h2>
-                
-                <div class="flex items-center text-sm text-gray-500 mb-3 space-x-3 divide-x divide-gray-300">
-                    <span>23/10 он (24 загвар)</span>
-                    <span class="pl-3">31,960 км</span>
-                    <span class="pl-3">Бензин + Цахилгаан</span>
-                    <span class="pl-3">Автомат</span>
-                </div>
-
-                <p class="text-3xl font-extrabold text-red-600 mb-2">
-                    69.000.000 ₮
-                </p>
-
-                <p class="text-sm text-gray-600 flex items-center">
-                    <span class="w-2 h-2 bg-gray-900 rounded-full mr-2"></span> Хар өнгийн суудлын бүрээс
-                </p>
-            </div>
-        </div>
-
-        <!-- More Listings Placeholder -->
-        <div class="text-center py-8 text-gray-500">
-            <p>Дахин 10 машины зар байна.</p>
-            <button class="mt-3 text-red-600 font-medium border border-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition duration-150">
-                Нэмж үзэх
-            </button>
-        </div>
-
     </main>
+
+    <!-- Modal for Adding Car -->
+    <div id="add-car-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-40 hidden">
+        <div id="modal-overlay" class="absolute inset-0"></div>
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg mx-4 z-50 transform transition-all duration-300 scale-100 opacity-100">
+            <div class="flex justify-between items-center pb-3 border-b">
+                <h3 class="text-2xl font-bold text-gray-800">Машины Зар Оруулах</h3>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <form id="add-car-form" class="mt-4 space-y-4">
+                <div>
+                    <label for="manufacturer" class="block text-sm font-medium text-gray-700">Үйлдвэрлэгч</label>
+                    <input type="text" id="manufacturer" name="manufacturer" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-red-500 focus:border-red-500" placeholder="Жишээ: Lexus">
+                </div>
+                <div>
+                    <label for="model" class="block text-sm font-medium text-gray-700">Модель</label>
+                    <input type="text" id="model" name="model" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="Жишээ: ES300h">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="year" class="block text-sm font-medium text-gray-700">Он</label>
+                        <input type="number" id="year" name="year" required min="1900" max="2025" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="Жишээ: 2019">
+                    </div>
+                    <div>
+                        <label for="mileage" class="block text-sm font-medium text-gray-700">Гүйлтийн зай (км)</label>
+                        <input type="number" id="mileage" name="mileage" required min="0" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="Жишээ: 78286">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-gray-700">Үнэ (Сая ₮)</label>
+                        <input type="number" id="price" name="price" required step="0.1" min="0" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="Жишээ: 38.8 (38,800,000 ₮)">
+                    </div>
+                    <div>
+                        <label for="fuelType" class="block text-sm font-medium text-gray-700">Түлшний төрөл</label>
+                        <select id="fuelType" name="fuelType" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                            <option value="Бензин">Бензин</option>
+                            <option value="Бензин + Цахилгаан">Бензин + Цахилгаан</option>
+                            <option value="Дизель">Дизель</option>
+                            <option value="Цахилгаан">Цахилгаан</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Шинэ File Upload талбар -->
+                <div>
+                    <label for="carImageFile" class="block text-sm font-medium text-gray-700">Зураг Оруулах (JPG/PNG)</label>
+                    <!-- Файлын хэмжээний хязгаарыг анхаарна уу. -->
+                    <input type="file" id="carImageFile" name="carImageFile" accept="image/png, image/jpeg" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-600 hover:file:bg-red-100">
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Нэмэлт мэдээлэл (Өнгө/Тайлбар)</label>
+                    <textarea id="description" name="description" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2" placeholder="Жишээ: Шаргал өнгийн суудлын бүрээс"></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-150">
+                    Зар Нэмэх
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Simple Footer (optional, but good practice) -->
     <footer class="text-center text-xs text-gray-400 py-4 mt-8 border-t">
-        © 2024 Машин Зарах Платформ. Бүх эрх хуулиар хамгаалагдсан.
+        © 2024 CarsMongolia.mn. (Хэрэглэгчийн ID нь энд харагдана)
     </footer>
 
 </body>
