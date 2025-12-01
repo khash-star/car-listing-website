@@ -40,486 +40,489 @@
     </div>
   </main>
 
-  <!-- ЗАР ОРУУЛАХ МОДАЛ -->
+  <!-- ЗАР ОРУУЛАХ МОДАЛ (ЗАССАН ХУВИЛБАР) -->
   <div
     id="add-car-modal"
-    class="fixed inset-0 bg-black bg-opacity-60 hidden z-20 flex items-center justify-center px-4 py-6 overflow-y-auto"
+    class="fixed inset-0 bg-black bg-opacity-60 hidden z-20 overflow-y-auto"
   >
-    <div
-      class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full relative p-6 md:p-8"
-    >
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-2xl font-bold text-gray-900">Машины Зар Оруулах</h2>
-        <button
-          id="close-modal-btn"
-          class="text-gray-400 hover:text-gray-600 text-2xl leading-none"
-        >
-          ×
-        </button>
-      </div>
-
-      <p class="text-xs text-gray-500 mb-4">
-        * тэмдэгтэй талбаруудыг заавал бөглөнө үү.
-        Зурагнууд Firebase Storage дээр хадгалагдаж, зарын мэдээлэл
-        Firestore-т орно.
-      </p>
-
-      <form id="add-car-form" class="space-y-6">
-        <!-- 1. ҮНДСЭН МЭДЭЭЛЭЛ -->
-        <div>
-          <h3 class="text-lg font-semibold mb-2 text-gray-800">
-            1. Машины үндсэн мэдээлэл
-          </h3>
-          <div class="grid md:grid-cols-2 gap-4">
-            <div>
-              <label
-                for="manufacturer"
-                class="block text-sm font-medium text-gray-700"
-                >Үйлдвэрлэгч *</label
-              >
-              <select
-                id="manufacturer"
-                name="manufacturer"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
-              >
-                <option value="">Сонгох</option>
-                <!-- JS-ээр CAR_DATA-гаас автоматаар бөглөнө -->
-              </select>
-            </div>
-            <div>
-              <label
-                for="model"
-                class="block text-sm font-medium text-gray-700"
-                >Модель *</label
-              >
-              <select
-                id="model"
-                name="model"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
-              >
-                <option value="">Эхлээд үйлдвэрлэгч сонгоно уу</option>
-              </select>
-            </div>
-            <div>
-              <label
-                for="year"
-                class="block text-sm font-medium text-gray-700"
-                >Үйлдвэрлэсэн он *</label
-              >
-              <input
-                type="number"
-                id="year"
-                name="year"
-                min="1980"
-                max="2099"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
-              />
-            </div>
-            <div>
-              <label
-                for="importYear"
-                class="block text-sm font-medium text-gray-700"
-                >Орж ирсэн он</label
-              >
-              <input
-                type="number"
-                id="importYear"
-                name="importYear"
-                min="1980"
-                max="2099"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
-              />
-            </div>
-          </div>
-
-          <div class="grid md:grid-cols-3 gap-4 mt-4">
-            <div>
-              <label
-                for="condition"
-                class="block text-sm font-medium text-gray-700"
-                >Нөхцөл *</label
-              >
-              <select
-                id="condition"
-                name="condition"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
-              >
-                <option value="Дугаар аваагүй">Дугаар аваагүй</option>
-                <option value="Дугаар авсан">Дугаар авсан</option>
-                <option value="Шинэ">Шинэ</option>
-                <option value="Хуучин">Хуучин</option>
-              </select>
-            </div>
-            <div>
-              <label
-                for="bodyType"
-                class="block text-sm font-medium text-gray-700"
-                >Төрөл</label
-              >
-              <select
-                id="bodyType"
-                name="bodyType"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
-              >
-                <option value="">Сонгох</option>
-                <option value="Суудлын">Суудлын</option>
-                <option value="Жийп">Жийп</option>
-                <option value="Микро">Микро</option>
-                <option value="Ачааны">Ачааны</option>
-                <option value="Бусад">Бусад</option>
-              </select>
-            </div>
-            <div>
-              <label
-                for="doors"
-                class="block text-sm font-medium text-gray-700"
-                >Хаалга</label
-              >
-              <select
-                id="doors"
-                name="doors"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
-              >
-                <option value="">Сонгох</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
-            </div>
-          </div>
+    <!-- wrapper: дээдээс бага зэрэг доор гаргаж, дотроо scroll-той болгоно -->
+    <div class="min-h-screen flex items-start justify-center px-4 py-8">
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full relative p-6 md:p-8"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-2xl font-bold text-gray-900">Машины Зар Оруулах</h2>
+          <button
+            id="close-modal-btn"
+            class="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+          >
+            ×
+          </button>
         </div>
 
-        <!-- 2. ТЕХНИК МЭДЭЭЛЭЛ -->
-        <div>
-          <h3 class="text-lg font-semibold mb-2 text-gray-800">
-            2. Техникийн үзүүлэлт
-          </h3>
-          <div class="grid md:grid-cols-2 gap-4">
-            <div>
-              <label
-                for="mileage"
-                class="block text-sm font-medium text-gray-700"
-                >Гүйлт (км) *</label
-              >
-              <input
-                type="number"
-                id="mileage"
-                name="mileage"
-                min="0"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
-              />
-            </div>
-            <div>
-              <label
-                for="price"
-                class="block text-sm font-medium text-gray-700"
-                >Үнэ (сая ₮) *</label
-              >
-              <input
-                type="number"
-                id="price"
-                name="price"
-                step="0.1"
-                min="0.1"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
-              />
-            </div>
-            <div>
-              <label
-                for="fuelType"
-                class="block text-sm font-medium text-gray-700"
-                >Түлш *</label
-              >
-              <select
-                id="fuelType"
-                name="fuelType"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
-              >
-                <option value="Бензин">Бензин</option>
-                <option value="Дизель">Дизель</option>
-                <option value="Хибрид">Хибрид</option>
-                <option value="Цахилгаан">Цахилгаан</option>
-                <option value="Хий">Хий</option>
-                <option value="Бусад">Бусад</option>
-              </select>
-            </div>
-            <div>
-              <label
-                for="driveType"
-                class="block text-sm font-medium text-gray-700"
-                >Хөтлөгч</label
-              >
-              <select
-                id="driveType"
-                name="driveType"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
-              >
-                <option value="">Сонгох</option>
-                <option value="Урд">Урд</option>
-                <option value="Хойд">Хойд</option>
-                <option value="Бүх дугуй 4WD">Бүх дугуй 4WD</option>
-              </select>
-            </div>
-            <div>
-              <label
-                for="transmission"
-                class="block text-sm font-medium text-gray-700"
-                >Хурдны хайрцаг</label
-              >
-              <select
-                id="transmission"
-                name="transmission"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
-              >
-                <option value="">Сонгох</option>
-                <option value="Автомат">Автомат</option>
-                <option value="Механик">Механик</option>
-                <option value="Хос сцепление">Хос сцепление</option>
-              </select>
-            </div>
-            <div>
-              <label
-                for="engineVolume"
-                class="block text-sm font-medium text-gray-700"
-                >Мотор багтаамж (л)</label
-              >
-              <input
-                type="text"
-                id="engineVolume"
-                name="engineVolume"
-                placeholder="Жишээ: 2.4"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
-              />
-            </div>
-          </div>
+        <p class="text-xs text-gray-500 mb-4">
+          * тэмдэгтэй талбаруудыг заавал бөглөнө үү.
+          Зурагнууд Firebase Storage дээр хадгалагдаж, зарын мэдээлэл
+          Firestore-т орно.
+        </p>
 
-          <div class="grid md:grid-cols-3 gap-4 mt-4">
-            <div>
-              <label
-                for="exteriorColor"
-                class="block text-sm font-medium text-gray-700"
-                >Гадна өнгө</label
-              >
-              <input
-                type="text"
-                id="exteriorColor"
-                name="exteriorColor"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
-              />
-            </div>
-            <div>
-              <label
-                for="interiorColor"
-                class="block text-sm font-medium text-gray-700"
-                >Дотор өнгө</label
-              >
-              <input
-                type="text"
-                id="interiorColor"
-                name="interiorColor"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
-              />
-            </div>
-            <div>
-              <label
-                for="leasing"
-                class="block text-sm font-medium text-gray-700"
-                >Лизинг</label
-              >
-              <select
-                id="leasing"
-                name="leasing"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
-              >
-                <option value="Лизинггүй">Лизинггүй</option>
-                <option value="Лизингтэй">Лизингтэй</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. ЗУРАГ, ВИДЕО -->
-        <div>
-          <h3 class="text-lg font-semibold mb-2 text-gray-800">
-            3. Зураг, видео
-          </h3>
-          <div class="space-y-3">
-            <div>
-              <label
-                for="carImages"
-                class="block text-sm font-medium text-gray-700"
-                >Зурагнууд (олон сонгож болно) *</label
-              >
-              <input
-                type="file"
-                id="carImages"
-                name="carImages"
-                accept="image/*"
-                multiple
-                class="mt-1 w-full text-sm"
-                required
-              />
-              <p
-                id="file-count-display"
-                class="text-xs text-gray-500 mt-1"
-              >
-                Одоогоор зураг сонгоогүй байна.
-              </p>
-              <p class="text-xs text-gray-400">
-                Нэг зураг 2MB-аас бага байхыг зөвлөж байна. Зургууд Firebase
-                Storage дээр хадгалагдана.
-              </p>
-            </div>
+        <form id="add-car-form" class="space-y-6">
+          <!-- 1. ҮНДСЭН МЭДЭЭЛЭЛ -->
+          <div>
+            <h3 class="text-lg font-semibold mb-2 text-gray-800">
+              1. Машины үндсэн мэдээлэл
+            </h3>
             <div class="grid md:grid-cols-2 gap-4">
               <div>
                 <label
-                  for="youtubeUrl"
+                  for="manufacturer"
                   class="block text-sm font-medium text-gray-700"
-                  >YouTube URL</label
+                  >Үйлдвэрлэгч *</label
+                >
+                <select
+                  id="manufacturer"
+                  name="manufacturer"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  required
+                >
+                  <option value="">Сонгох</option>
+                  <!-- JS-ээр CAR_DATA-гаас автоматаар бөглөнө -->
+                </select>
+              </div>
+              <div>
+                <label
+                  for="model"
+                  class="block text-sm font-medium text-gray-700"
+                  >Модель *</label
+                >
+                <select
+                  id="model"
+                  name="model"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  required
+                >
+                  <option value="">Эхлээд үйлдвэрлэгч сонгоно уу</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="year"
+                  class="block text-sm font-medium text-gray-700"
+                  >Үйлдвэрлэсэн он *</label
                 >
                 <input
-                  type="url"
-                  id="youtubeUrl"
-                  name="youtubeUrl"
-                  placeholder="https://www.youtube.com/..."
+                  type="number"
+                  id="year"
+                  name="year"
+                  min="1980"
+                  max="2099"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  for="importYear"
+                  class="block text-sm font-medium text-gray-700"
+                  >Орж ирсэн он</label
+                >
+                <input
+                  type="number"
+                  id="importYear"
+                  name="importYear"
+                  min="1980"
+                  max="2099"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
+                />
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-4 mt-4">
+              <div>
+                <label
+                  for="condition"
+                  class="block text-sm font-medium text-gray-700"
+                  >Нөхцөл *</label
+                >
+                <select
+                  id="condition"
+                  name="condition"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  required
+                >
+                  <option value="Дугаар аваагүй">Дугаар аваагүй</option>
+                  <option value="Дугаар авсан">Дугаар авсан</option>
+                  <option value="Шинэ">Шинэ</option>
+                  <option value="Хуучин">Хуучин</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="bodyType"
+                  class="block text-sm font-medium text-gray-700"
+                  >Төрөл</label
+                >
+                <select
+                  id="bodyType"
+                  name="bodyType"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
+                >
+                  <option value="">Сонгох</option>
+                  <option value="Суудлын">Суудлын</option>
+                  <option value="Жийп">Жийп</option>
+                  <option value="Микро">Микро</option>
+                  <option value="Ачааны">Ачааны</option>
+                  <option value="Бусад">Бусад</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="doors"
+                  class="block text-sm font-medium text-gray-700"
+                  >Хаалга</label
+                >
+                <select
+                  id="doors"
+                  name="doors"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
+                >
+                  <option value="">Сонгох</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. ТЕХНИК МЭДЭЭЛЭЛ -->
+          <div>
+            <h3 class="text-lg font-semibold mb-2 text-gray-800">
+              2. Техникийн үзүүлэлт
+            </h3>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="mileage"
+                  class="block text-sm font-medium text-gray-700"
+                  >Гүйлт (км) *</label
+                >
+                <input
+                  type="number"
+                  id="mileage"
+                  name="mileage"
+                  min="0"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  for="price"
+                  class="block text-sm font-medium text-gray-700"
+                  >Үнэ (сая ₮) *</label
+                >
+                <input
+                  type="number"
+                  id="price"
+                  name="price"
+                  step="0.1"
+                  min="0.1"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  for="fuelType"
+                  class="block text-sm font-medium text-gray-700"
+                  >Түлш *</label
+                >
+                <select
+                  id="fuelType"
+                  name="fuelType"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  required
+                >
+                  <option value="Бензин">Бензин</option>
+                  <option value="Дизель">Дизель</option>
+                  <option value="Хибрид">Хибрид</option>
+                  <option value="Цахилгаан">Цахилгаан</option>
+                  <option value="Хий">Хий</option>
+                  <option value="Бусад">Бусад</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="driveType"
+                  class="block text_sm font-medium text-gray-700"
+                  >Хөтлөгч</label
+                >
+                <select
+                  id="driveType"
+                  name="driveType"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
+                >
+                  <option value="">Сонгох</option>
+                  <option value="Урд">Урд</option>
+                  <option value="Хойд">Хойд</option>
+                  <option value="Бүх дугуй 4WD">Бүх дугуй 4WD</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="transmission"
+                  class="block text-sm font-medium text-gray-700"
+                  >Хурдны хайрцаг</label
+                >
+                <select
+                  id="transmission"
+                  name="transmission"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
+                >
+                  <option value="">Сонгох</option>
+                  <option value="Автомат">Автомат</option>
+                  <option value="Механик">Механик</option>
+                  <option value="Хос сцепление">Хос сцепление</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  for="engineVolume"
+                  class="block text-sm font-medium text-gray-700"
+                  >Мотор багтаамж (л)</label
+                >
+                <input
+                  type="text"
+                  id="engineVolume"
+                  name="engineVolume"
+                  placeholder="Жишээ: 2.4"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
+                />
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-4 mt-4">
+              <div>
+                <label
+                  for="exteriorColor"
+                  class="block text-sm font-medium text-gray-700"
+                  >Гадна өнгө</label
+                >
+                <input
+                  type="text"
+                  id="exteriorColor"
+                  name="exteriorColor"
                   class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
                 />
               </div>
               <div>
                 <label
-                  for="tiktokUrl"
+                  for="interiorColor"
                   class="block text-sm font-medium text-gray-700"
-                  >TikTok линк</label
+                  >Дотор өнгө</label
                 >
                 <input
-                  type="url"
-                  id="tiktokUrl"
-                  name="tiktokUrl"
-                  placeholder="https://www.tiktok.com/..."
+                  type="text"
+                  id="interiorColor"
+                  name="interiorColor"
                   class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
                 />
               </div>
+              <div>
+                <label
+                  for="leasing"
+                  class="block text-sm font-medium text-gray-700"
+                  >Лизинг</label
+                >
+                <select
+                  id="leasing"
+                  name="leasing"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
+                >
+                  <option value="Лизинггүй">Лизинггүй</option>
+                  <option value="Лизингтэй">Лизингтэй</option>
+                </select>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- 4. ЗАРЫН ТАЙЛБАР -->
-        <div>
-          <h3 class="text-lg font-semibold mb-2 text-gray-800">
-            4. Зарын тайлбар
-          </h3>
-          <textarea
-            id="description"
-            name="description"
-            rows="4"
-            class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-            placeholder="Машиныгаа аль болох дэлгэрэнгүй, үнэн зөв тайлбарлана уу."
-            required
-          ></textarea>
-        </div>
-
-        <!-- 5. ЗАР ОРУУЛАГЧИЙН МЭДЭЭЛЭЛ -->
-        <div>
-          <h3 class="text-lg font-semibold mb-2 text-gray-800">
-            5. Зар оруулагчийн мэдээлэл
-          </h3>
-          <div class="grid md:grid-cols-2 gap-4">
-            <div>
-              <label
-                for="sellerName"
-                class="block text-sm font-medium text-gray-700"
-                >Нэр / Дэлгүүр *</label
-              >
-              <input
-                type="text"
-                id="sellerName"
-                name="sellerName"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
-              />
-            </div>
-            <div>
-              <label
-                for="sellerEmail"
-                class="block text-sm font-medium text-gray-700"
-                >Имэйл</label
-              >
-              <input
-                type="email"
-                id="sellerEmail"
-                name="sellerEmail"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
-              />
-            </div>
-            <div>
-              <label
-                for="sellerPhone"
-                class="block text-sm font-medium text-gray-700"
-                >Утас *</label
-              >
-              <input
-                type="tel"
-                id="sellerPhone"
-                name="sellerPhone"
-                placeholder="+97699998888"
-                class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-                required
-              />
-            </div>
-            <div>
-              <span class="block text-sm font-medium text-gray-700 mb-1"
-                >Холбогдох сувгууд</span
-              >
-              <label class="inline-flex items-center mr-4 text-sm">
+          <!-- 3. ЗУРАГ, ВИДЕО -->
+          <div>
+            <h3 class="text-lg font-semibold mb-2 text-gray-800">
+              3. Зураг, видео
+            </h3>
+            <div class="space-y-3">
+              <div>
+                <label
+                  for="carImages"
+                  class="block text-sm font-medium text-gray-700"
+                  >Зурагнууд (олон сонгож болно) *</label
+                >
                 <input
-                  type="checkbox"
-                  name="messengerWhatsapp"
-                  class="mr-1"
-                />Whatsapp
-              </label>
-              <label class="inline-flex items-center mr-4 text-sm">
-                <input
-                  type="checkbox"
-                  name="messengerTelegram"
-                  class="mr-1"
-                />Telegram
-              </label>
-              <label class="inline-flex items-center text-sm">
-                <input
-                  type="checkbox"
-                  name="messengerFacebook"
-                  class="mr-1"
-                />Facebook Messenger
-              </label>
+                  type="file"
+                  id="carImages"
+                  name="carImages"
+                  accept="image/*"
+                  multiple
+                  class="mt-1 w-full text-sm"
+                  required
+                />
+                <p
+                  id="file-count-display"
+                  class="text-xs text-gray-500 mt-1"
+                >
+                  Одоогоор зураг сонгоогүй байна.
+                </p>
+                <p class="text-xs text-gray-400">
+                  Нэг зураг 2MB-аас бага байхыг зөвлөж байна. Зургууд Firebase
+                  Storage дээр хадгалагдана.
+                </p>
+              </div>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label
+                    for="youtubeUrl"
+                    class="block text-sm font-medium text-gray-700"
+                    >YouTube URL</label
+                  >
+                  <input
+                    type="url"
+                    id="youtubeUrl"
+                    name="youtubeUrl"
+                    placeholder="https://www.youtube.com/..."
+                    class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
+                  />
+                </div>
+                <div>
+                  <label
+                    for="tiktokUrl"
+                    class="block text-sm font-medium text-gray-700"
+                    >TikTok линк</label
+                  >
+                  <input
+                    type="url"
+                    id="tiktokUrl"
+                    name="tiktokUrl"
+                    placeholder="https://www.tiktok.com/..."
+                    class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="pt-2 flex items-center justify-between gap-4">
-          <p
-            id="auth-status"
-            class="text-xs text-gray-500"
-          >
-            Firebase-д холбогдож байна...
-          </p>
-          <button
-            type="submit"
-            id="submit-car-btn"
-            class="bg-red-600 text-white px-6 py-2.5 rounded-lg font-semibold shadow hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled
-          >
-            Зар Нэмэх
-          </button>
-        </div>
-      </form>
+          <!-- 4. ЗАРЫН ТАЙЛБАР -->
+          <div>
+            <h3 class="text-lg font-semibold mb-2 text-gray-800">
+              4. Зарын тайлбар
+            </h3>
+            <textarea
+              id="description"
+              name="description"
+              rows="4"
+              class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              placeholder="Машиныгаа аль болох дэлгэрэнгүй, үнэн зөв тайлбарлана уу."
+              required
+            ></textarea>
+          </div>
+
+          <!-- 5. ЗАР ОРУУЛАГЧИЙН МЭДЭЭЛЭЛ -->
+          <div>
+            <h3 class="text-lg font-semibold mb-2 text-gray-800">
+              5. Зар оруулагчийн мэдээлэл
+            </h3>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="sellerName"
+                  class="block text-sm font-medium text-gray-700"
+                  >Нэр / Дэлгүүр *</label
+                >
+                <input
+                  type="text"
+                  id="sellerName"
+                  name="sellerName"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  required
+                />
+              </div>
+              <div>
+                <label
+                  for="sellerEmail"
+                  class="block text-sm font-medium text-gray-700"
+                  >Имэйл</label
+                >
+                <input
+                  type="email"
+                  id="sellerEmail"
+                  name="sellerEmail"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-300"
+                />
+              </div>
+              <div>
+                <label
+                  for="sellerPhone"
+                  class="block text-sm font-medium text-gray-700"
+                  >Утас *</label
+                >
+                <input
+                  type="tel"
+                  id="sellerPhone"
+                  name="sellerPhone"
+                  placeholder="+97699998888"
+                  class="mt-1 w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  required
+                />
+              </div>
+              <div>
+                <span class="block text-sm font-medium text-gray-700 mb-1"
+                  >Холбогдох сувгууд</span
+                >
+                <label class="inline-flex items-center mr-4 text-sm">
+                  <input
+                    type="checkbox"
+                    name="messengerWhatsapp"
+                    class="mr-1"
+                  />Whatsapp
+                </label>
+                <label class="inline-flex items-center mr-4 text-sm">
+                  <input
+                    type="checkbox"
+                    name="messengerTelegram"
+                    class="mr-1"
+                  />Telegram
+                </label>
+                <label class="inline-flex items-center text-sm">
+                  <input
+                    type="checkbox"
+                    name="messengerFacebook"
+                    class="mr-1"
+                  />Facebook Messenger
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 flex items-center justify-between gap-4">
+            <p
+              id="auth-status"
+              class="text-xs text-gray-500"
+            >
+              Firebase-д холбогдож байна...
+            </p>
+            <button
+              type="submit"
+              id="submit-car-btn"
+              class="bg-red-600 text-white px-6 py-2.5 rounded-lg font-semibold shadow hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled
+            >
+              Зар Нэмэх
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -543,34 +546,24 @@
     // ---------- CAR BRAND / MODEL LIST ----------
     const CAR_DATA = {
       Toyota: [
-        "Prius",
-        "Prius Alpha",
-        "Aqua",
-        "Alphard",
-        "Crown",
-        "Camry",
-        "Harrier",
-        "CHR",
-        "RAV4",
-        "Land Cruiser 200",
-        "Land Cruiser 300",
-        "Fielder"
+        "Prius","Prius Alpha","Aqua","Alphard","Crown","Camry",
+        "Harrier","CHR","RAV4","Land Cruiser 200","Land Cruiser 300","Fielder"
       ],
-      Lexus: ["RX350", "RX450h", "NX300h", "ES300h", "GX460", "LX570"],
-      Honda: ["Fit", "Vezel", "CR-V", "Stepwgn", "Odyssey", "Accord", "Shuttle"],
-      Hyundai: ["Sonata", "Avante", "Tucson", "Santa Fe", "Palisade", "Staria"],
-      Kia: ["Sorento", "Sportage", "Carnival", "K5", "K7", "Bongo3"],
-      "Mercedes-Benz": ["C200", "E200", "S350", "GLC250", "GLS400"],
-      BMW: ["320i", "520i", "740Li", "X3", "X5"],
-      Audi: ["A4", "A6", "A8", "Q5", "Q7"],
-      Nissan: ["X-Trail", "Serena", "Note", "Cube", "Elgrand"],
-      Subaru: ["Forester", "Legacy", "Outback", "Impreza"],
-      Volkswagen: ["Golf", "Passat", "Tiguan"],
-      Mazda: ["Axela", "Atenza", "CX-5", "CX-8"],
-      Chevrolet: ["Cruze", "Volt", "Camaro"],
-      Ford: ["Focus", "Explorer", "Mustang"],
-      Jeep: ["Compass", "Cherokee", "Wrangler"],
-      Tesla: ["Model S", "Model 3", "Model X", "Model Y"]
+      Lexus: ["RX350","RX450h","NX300h","ES300h","GX460","LX570"],
+      Honda: ["Fit","Vezel","CR-V","Stepwgn","Odyssey","Accord","Shuttle"],
+      Hyundai: ["Sonata","Avante","Tucson","Santa Fe","Palisade","Staria"],
+      Kia: ["Sorento","Sportage","Carnival","K5","K7","Bongo3"],
+      "Mercedes-Benz": ["C200","E200","S350","GLC250","GLS400"],
+      BMW: ["320i","520i","740Li","X3","X5"],
+      Audi: ["A4","A6","A8","Q5","Q7"],
+      Nissan: ["X-Trail","Serena","Note","Cube","Elgrand"],
+      Subaru: ["Forester","Legacy","Outback","Impreza"],
+      Volkswagen: ["Golf","Passat","Tiguan"],
+      Mazda: ["Axela","Atenza","CX-5","CX-8"],
+      Chevrolet: ["Cruze","Volt","Camaro"],
+      Ford: ["Focus","Explorer","Mustang"],
+      Jeep: ["Compass","Cherokee","Wrangler"],
+      Tesla: ["Model S","Model 3","Model X","Model Y"]
     };
 
     const manufacturerSelect = document.getElementById("manufacturer");
