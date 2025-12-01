@@ -44,6 +44,12 @@
         }
 
         let userId = null;
+        let allCars = []; // Бүх машины мэдээллийг хадгалах
+        let filterState = { 
+            fuelType: null // Сонгогдсон түлшний төрөл
+        };
+        const fuelTypes = ["Бензин", "Бензин + Цахилгаан", "Дизель", "Цахилгаан"];
+
 
         // 1. Authentication
         async function authenticate() {
@@ -69,33 +75,45 @@
                 snapshot.forEach((doc) => {
                     cars.push({ id: doc.id, ...doc.data() });
                 });
-                renderCarListings(cars);
+                allCars = cars; // Бүх мэдээллийг хадгалах
+                applyFilterAndRender(); // Шүүлтүүр хийж, харуулах
             }, (error) => {
                 console.error("Firestore Snapshot Error:", error);
             });
         }
 
-        // 3. Render function
+        // 3. Шүүлтүүр хийж, харуулах үндсэн функц
+        function applyFilterAndRender() {
+            let filteredCars = allCars;
+
+            // Түлшний төрлөөр шүүх
+            if (filterState.fuelType) {
+                filteredCars = filteredCars.filter(car => car.fuelType === filterState.fuelType);
+            }
+
+            renderCarListings(filteredCars);
+            updateFilterButtons(); // Товчлууруудыг шинэчлэх
+        }
+
+        // 4. Зар харуулах функц
         function renderCarListings(cars) {
             const container = document.getElementById('car-listings');
-            container.innerHTML = ''; // Clear existing content
+            container.innerHTML = ''; 
 
             if (cars.length === 0) {
-                container.innerHTML = '<div class="text-center py-12 text-gray-500 bg-white rounded-xl shadow-lg col-span-full"><p class="text-xl font-medium">Одоогоор зар оруулаагүй байна.</p><p class="mt-2">"Зар Оруулах" товчийг дарж анхны машинаа нэмнэ үү.</p></div>';
+                container.innerHTML = '<div class="text-center py-12 text-gray-500 bg-white rounded-xl shadow-lg col-span-full"><p class="text-xl font-medium">Сонгосон нөхцөлөөр зар олдсонгүй.</p><p class="mt-2">Шүүлтүүрийг цэвэрлэж үзнэ үү.</p></div>';
                 return;
             }
 
             cars.forEach(car => {
-                const priceFormatted = new Intl.NumberFormat('mn-MN', { style: 'currency', currency: 'MNT', minimumFractionDigits: 0 }).format(car.price * 1000000).replace('₮', ' ₮'); // Assume price is in millions (сая)
+                const priceFormatted = new Intl.NumberFormat('mn-MN', { style: 'currency', currency: 'MNT', minimumFractionDigits: 0 }).format(car.price * 1000000).replace('₮', ' ₮'); 
                 
                 const carCard = document.createElement('div');
                 carCard.className = 'bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 transform transition duration-300 hover:shadow-xl hover:-translate-y-0.5';
                 
-                // Use the poster's first name/initials for the badge if available
                 const posterName = car.posterId === userId ? "Та" : car.posterId.substring(0, 8); 
                 const posterBadge = car.posterId === userId ? 'bg-green-600' : 'bg-gray-700';
                 
-                // Determine image source: prioritize first image in array over placeholder
                 const imageSource = car.imageDatas && car.imageDatas.length > 0 
                     ? car.imageDatas[0] 
                     : (car.imageUrl || 'https://placehold.co/600x300/e5e7eb/6b7280?text=Зураг+Олдсонгүй');
@@ -146,8 +164,63 @@
                 container.appendChild(carCard);
             });
         }
+        
+        // 5. Шүүлтүүрийн товчлууруудыг шинэчлэх
+        function updateFilterButtons() {
+            const container = document.getElementById('fuel-filter-buttons');
+            container.innerHTML = '';
+            
+            // "Нийт нөхцөл" буюу Шүүлтүүр арилгах товч
+            const allButtonClass = filterState.fuelType === null ? 
+                "flex-shrink-0 bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-full mr-2 shadow-md" : 
+                "flex-shrink-0 text-gray-700 bg-gray-200 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-300 transition duration-150";
 
-        // 4. Save Car function
+            container.innerHTML = `
+                <button id="filter-all-btn" class="${allButtonClass}">
+                    <span class="mr-1">🚗</span> Нийт нөхцөл
+                </button>
+            `;
+
+            // Түлшний төрлөөр шүүх товчлуурууд
+            fuelTypes.forEach(type => {
+                const isActive = filterState.fuelType === type;
+                const button = document.createElement('button');
+                button.textContent = type;
+                button.dataset.fuelType = type;
+                button.className = isActive ? 
+                    "flex-shrink-0 bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-full mr-2 shadow-md" :
+                    "flex-shrink-0 text-gray-700 bg-gray-200 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-300 transition duration-150";
+                
+                button.addEventListener('click', () => {
+                    if (filterState.fuelType === type) {
+                        filterState.fuelType = null; // Сонгогдсон бол дахин дарахад цэвэрлэнэ
+                    } else {
+                        filterState.fuelType = type;
+                    }
+                    applyFilterAndRender();
+                });
+
+                container.appendChild(button);
+            });
+
+            // Нийт нөхцөл товчлуурын Event listener (Шүүлтүүрийг арилгах)
+            document.getElementById('filter-all-btn').addEventListener('click', () => {
+                filterState.fuelType = null;
+                applyFilterAndRender();
+            });
+
+            // Бусад загварчилсан товчлуудыг нэмэх
+            container.innerHTML += `
+                <button class="flex-shrink-0 text-gray-700 bg-gray-200 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-300 transition duration-150">
+                    Үйлдвэрлэсэн он (Загвар)
+                </button>
+                <button class="flex-shrink-0 text-gray-700 bg-gray-200 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-300 transition duration-150">
+                    Үнэ (Загвар)
+                </button>
+            `;
+        }
+
+        // 6. Save Car function
         async function saveCar(data) {
             if (!window.db) return;
             const carsCollectionPath = `/artifacts/${appId}/public/data/cars`;
@@ -176,15 +249,14 @@
             }
         }
         
-        // **Утилити функц: Файлыг Base64 руу хөрвүүлэх (Олон зургийг боловсруулах)**
-        // FileList-ийг хүлээж авч, амлалт (Promise)-ийн массив буцаана.
+        // 7. Зураг боловсруулах функц
         async function processImageFile(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const img = new Image();
                     img.onload = () => {
-                        const MAX_WIDTH = 800; // Максимал өргөн
+                        const MAX_WIDTH = 800; 
                         let width = img.width;
                         let height = img.height;
 
@@ -199,10 +271,8 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        // Зургийг шахаж, Base64 руу хөрвүүлэх (JPG нь илүү сайн шахагддаг)
-                        const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% чанартай JPG
+                        const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.7); 
 
-                        // Ганц зургийн хэмжээ 800KB (Base64-д 1.1MB орчим)
                         if (resizedDataUrl.length > 1100000) { 
                              reject(new Error(`"${file.name}" зургийн хэмжээ хэтэрхий том байна (800KB-аас бага байх ёстой).`));
                         } else {
@@ -218,7 +288,7 @@
         }
 
 
-        // 5. Custom Alert/Modal functions (since window.alert is forbidden)
+        // 8. Custom Alert/Modal functions 
         function showCustomAlert(message, type = 'info') {
             const alertBox = document.getElementById('custom-alert');
             const alertMessage = document.getElementById('alert-message');
@@ -245,10 +315,27 @@
 
         function closeModal() {
             document.getElementById('add-car-modal').classList.add('hidden');
-            document.getElementById('add-car-form').reset(); // Clear form on close
+            document.getElementById('add-car-form').reset(); 
+            document.getElementById('file-count-display').textContent = ''; 
+        }
+        
+        function updateFileCount(event) {
+            const files = event.target.files;
+            const display = document.getElementById('file-count-display');
+            if (files.length > 1) {
+                display.textContent = `${files.length} зураг сонгогдсон.`;
+                display.classList.remove('hidden');
+            } else if (files.length === 1) {
+                 display.textContent = `${files[0].name}`;
+                 display.classList.remove('hidden');
+            } else {
+                display.textContent = '';
+                display.classList.add('hidden');
+            }
         }
 
-        // 6. Event Listeners and Initialization
+
+        // 9. Event Listeners and Initialization
         onAuthStateChanged(window.auth, (user) => {
             if (user) {
                 userId = user.uid;
@@ -279,14 +366,12 @@
 
                 if (imageFiles.length > 0) {
                     for (const file of imageFiles) {
-                         // Зураг бүрийг Base64 руу хөрвүүлэх үйл явцыг массивд нэмнэ
                         imagePromises.push(processImageFile(file));
                     }
                 }
                 
                 let imageDatas = [];
                 try {
-                    // Бүх зургийг зэрэг боловсруулах
                     imageDatas = await Promise.all(imagePromises);
                 } catch (error) {
                     console.error("File processing error:", error);
@@ -313,7 +398,7 @@
                     price: carData.price,
                     fuelType: carData.fuelType,
                     description: carData.description,
-                    imageDatas: imageDatas, // Store array of Base64 strings here
+                    imageDatas: imageDatas, 
                 };
                 
                 // 4. Save
@@ -321,9 +406,15 @@
             });
 
             // Open/Close modal listeners
-            document.getElementById('open-modal-btn').addEventListener('click', openModal);
-            document.getElementById('close-modal-btn').addEventListener('click', closeModal);
-            document.getElementById('modal-overlay').addEventListener('click', closeModal);
+            const openModalBtn = document.getElementById('open-modal-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const carImageFile = document.getElementById('carImageFile');
+
+            if (openModalBtn) openModalBtn.addEventListener('click', openModal);
+            if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+            if (modalOverlay) modalOverlay.addEventListener('click', closeModal);
+            if (carImageFile) carImageFile.addEventListener('change', updateFileCount);
         });
     </script>
     
@@ -350,19 +441,19 @@
             </div>
         </div>
         
-        <div class="filter-scroll flex overflow-x-auto whitespace-nowrap px-4 py-3 border-b bg-gray-100">
-            <!-- Filter Buttons - Will not function without full backend logic -->
+        <div id="fuel-filter-buttons" class="filter-scroll flex overflow-x-auto whitespace-nowrap px-4 py-3 border-b bg-gray-100">
+             <!-- Buttons rendered by updateFilterButtons() JS function -->
             <button class="flex-shrink-0 bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-full mr-2 shadow-md">
                 <span class="mr-1">🚗</span> Нийт нөхцөл
             </button>
             <button class="flex-shrink-0 text-gray-700 bg-gray-200 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-300 transition duration-150">
-                Үйлдвэрлэсэн он
+                Үйлдвэрлэсэн он (Загвар)
             </button>
             <button class="flex-shrink-0 text-gray-700 bg-gray-200 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-300 transition duration-150">
-                Үнэ
+                Үнэ (Загвар)
             </button>
             <button class="flex-shrink-0 text-gray-700 bg-gray-200 text-sm font-medium px-4 py-2 rounded-full mr-2 hover:bg-gray-300 transition duration-150">
-                Түлшний төрөл
+                Түлшний төрөл (Загвар)
             </button>
         </div>
     </header>
@@ -426,10 +517,16 @@
                     </div>
                 </div>
                 
-                <!-- Шинэчлэгдсэн File Upload талбар: multiple нэмсэн -->
+                <!-- File Upload талбар -->
                 <div>
                     <label for="carImageFile" class="block text-sm font-medium text-gray-700">Зураг Оруулах (JPG/PNG) - Олон зураг оруулж болно</label>
-                    <input type="file" id="carImageFile" name="carImageFile" multiple accept="image/png, image/jpeg" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-600 hover:file:bg-red-100">
+                    
+                    <div class="flex items-center space-x-3 mt-1">
+                        <input type="file" id="carImageFile" name="carImageFile" multiple accept="image/png, image/jpeg" class="block w-full border border-gray-300 rounded-md shadow-sm p-2 file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-600 hover:file:bg-red-100">
+                        <!-- Сонгогдсон зургийн тоог харуулах талбар -->
+                        <span id="file-count-display" class="text-sm font-medium text-gray-600 whitespace-nowrap"></span>
+                    </div>
+
                     <p class="text-xs text-gray-500 mt-1">Зураг бүр автоматаар шахагдаж нийт 1.8MB хязгаарт багтана.</p>
                 </div>
 
