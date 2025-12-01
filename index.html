@@ -9,7 +9,7 @@
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
         body {
-            /* энэ код маань зар нэмэх товч нь ажиллахгүй байгааг шалгаж байна */
+            /* коммент болгосон тайлбар */
             font-family: "Inter", sans-serif;
             background-color: #f6f7f7;
         }
@@ -52,44 +52,31 @@
         </div>
     </header>
 
-    <!-- Filter Bar -->
+    <!-- Filter Bar (Үйлдвэрлэгч / Модель хайлт) -->
     <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-white shadow-inner mb-6"
     >
         <div
             id="filter-container"
-            class="flex space-x-3 overflow-x-auto filter-scroll"
+            class="flex flex-col md:flex-row md:space-x-4 space-y-3 md:space-y-0 filter-scroll"
         >
+            <input
+                id="filter-manufacturer"
+                type="text"
+                placeholder="Үйлдвэрлэгчээр хайх (жишээ: Lexus, Toyota...)"
+                class="w-full md:w-1/2 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-red-500 focus:border-red-500"
+            />
+            <input
+                id="filter-model"
+                type="text"
+                placeholder="Моделоор хайх (жишээ: ES300h, CR-V...)"
+                class="w-full md:w-1/2 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-red-500 focus:border-red-500"
+            />
             <button
-                id="filter-all"
-                class="filter-btn bg-red-600 text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap shadow-md"
-                data-filter="all"
+                id="clear-filters"
+                class="md:w-auto w-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-semibold px-4 py-2 rounded-lg"
             >
-                Нийт нөхцөл
-            </button>
-            <button
-                class="filter-btn text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition duration-150"
-                data-filter="Бензин"
-            >
-                Бензин
-            </button>
-            <button
-                class="filter-btn text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition duration-150"
-                data-filter="Дизель"
-            >
-                Дизель
-            </button>
-            <button
-                class="filter-btn text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition duration-150"
-                data-filter="Бензин + Цахилгаан"
-            >
-                Бензин + Цахилгаан
-            </button>
-            <button
-                class="filter-btn text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition duration-150"
-                data-filter="Цахилгаан"
-            >
-                Цахилгаан
+                Шүүлтүүр цэвэрлэх
             </button>
         </div>
     </div>
@@ -322,7 +309,7 @@
                                     <path
                                         class="opacity-75"
                                         fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938л3-2.647z"
                                     ></path>
                                 </svg>
                             </span>
@@ -449,8 +436,11 @@
         // ----------------- ДАТА ХАДГАЛАЛТ (localStorage) -----------------
         const STORAGE_KEY = "carsmongolia_cars";
         let allCars = [];
-        let currentFilter = "all";
         let generateDescBtn = null; // AI товч глобал
+
+        // шинэ шүүлтүүрийн төлөв
+        let searchManufacturer = "";
+        let searchModel = "";
 
         function loadCarsFromStorage() {
             try {
@@ -473,21 +463,27 @@
         }
 
         // ----------------- РЕНДЕР ФУНКЦ -----------------
-        function renderCarListings(filter) {
+        function renderCarListings() {
             const container = document.getElementById("listings-container");
             container.innerHTML = "";
 
             const filteredCars = allCars.filter((car) => {
-                if (filter === "all") return true;
-                return car.fuelType === filter;
+                const man = (car.manufacturer || "").toLowerCase();
+                const mdl = (car.model || "").toLowerCase();
+                const matchMan = man.includes(searchManufacturer);
+                const matchModel = mdl.includes(searchModel);
+                // хоёулаа таарах ёстой; хэрэв нэг тал хоосон бол нөгөөгөөр нь шүүнэ
+                if (searchManufacturer && !matchMan) return false;
+                if (searchModel && !matchModel) return false;
+                return true;
             });
 
             if (filteredCars.length === 0) {
                 container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500 font-semibold text-lg">
                     Одоогоор ${
-                        filter === "all"
+                        !searchManufacturer && !searchModel
                             ? "машины зар байхгүй"
-                            : "сонгосон нөхцөлөөр зар олдсонгүй"
+                            : "шүүлтүүрээр тохирох зар олдсонгүй"
                     }.
                  </div>`;
                 return;
@@ -557,8 +553,8 @@
                 "0 файл сонгосон";
         }
 
-        // ----------------- ТАЙЛБАР ҮҮСГЭХ (Gemini – хүсвэл key тавиад ашигла) -----------------
-        const LLM_API_KEY = ""; // Хоосон байвал AI товч зүгээр алдаа мессеж өгнө
+        // ----------------- ТАЙЛБАР ҮҮСГЭХ (Gemini – key тавьбал ажиллана) -----------------
+        const LLM_API_KEY = ""; // Хоосон бол зөвхөн алдаа мессеж өгнө
 
         async function generateDescription() {
             const manufacturer =
@@ -659,10 +655,15 @@
                 document.getElementById("carImageFile");
             const fileCountDisplay =
                 document.getElementById("file-count-display");
-            const filterButtons =
-                document.querySelectorAll(".filter-btn");
             generateDescBtn =
                 document.getElementById("generate-description-btn");
+
+            const manufacturerInput =
+                document.getElementById("filter-manufacturer");
+            const modelInput =
+                document.getElementById("filter-model");
+            const clearFiltersBtn =
+                document.getElementById("clear-filters");
 
             // Modal listeners
             if (openModalBtn) openModalBtn.addEventListener("click", openModal);
@@ -684,26 +685,31 @@
                 });
             }
 
-            // Filter buttons
-            filterButtons.forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    const filter = btn.dataset.filter;
-                    currentFilter = filter;
-
-                    filterButtons.forEach((b) => {
-                        b.classList.remove(
-                            "bg-red-600",
-                            "text-white"
-                        );
-                        b.classList.add("bg-gray-200", "text-gray-700");
-                    });
-
-                    btn.classList.remove("bg-gray-200", "text-gray-700");
-                    btn.classList.add("bg-red-600", "text-white");
-
-                    renderCarListings(filter);
+            // Manufacturer / Model хайлт (real-time)
+            if (manufacturerInput) {
+                manufacturerInput.addEventListener("input", () => {
+                    searchManufacturer =
+                        manufacturerInput.value.toLowerCase().trim();
+                    renderCarListings();
                 });
-            });
+            }
+            if (modelInput) {
+                modelInput.addEventListener("input", () => {
+                    searchModel =
+                        modelInput.value.toLowerCase().trim();
+                    renderCarListings();
+                });
+            }
+
+            if (clearFiltersBtn) {
+                clearFiltersBtn.addEventListener("click", () => {
+                    searchManufacturer = "";
+                    searchModel = "";
+                    if (manufacturerInput) manufacturerInput.value = "";
+                    if (modelInput) modelInput.value = "";
+                    renderCarListings();
+                });
+            }
 
             // Form submit
             if (form) {
@@ -743,7 +749,7 @@
 
                         allCars.unshift(carData); // шинээр нэмэгдсэн эхэнд
                         saveCarsToStorage(allCars);
-                        renderCarListings(currentFilter);
+                        renderCarListings();
                         showSuccessAlert("Машины зар амжилттай нэмэгдлээ!");
                         closeModal();
                     } catch (error) {
@@ -763,12 +769,12 @@
                 );
             }
 
-            // Анхны дата – localStorage-оос уншина
+            // Анхны дата – localStorage-оос
             allCars = loadCarsFromStorage();
             const loadingMessage =
                 document.getElementById("loading-message");
             if (loadingMessage) loadingMessage.classList.add("hidden");
-            renderCarListings(currentFilter);
+            renderCarListings();
         });
     </script>
 </body>
