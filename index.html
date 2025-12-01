@@ -9,11 +9,9 @@
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
         body {
-            /* коммент болгосон тайлбар */
             font-family: "Inter", sans-serif;
             background-color: #f6f7f7;
         }
-        /* Filter scrollbar hide */
         .filter-scroll::-webkit-scrollbar {
             display: none;
         }
@@ -34,7 +32,6 @@
                 id="open-modal-btn"
                 class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-red-700 transition duration-150 flex items-center space-x-1"
             >
-                <!-- Plus icon -->
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="h-5 w-5"
@@ -52,32 +49,63 @@
         </div>
     </header>
 
-    <!-- Filter Bar (Үйлдвэрлэгч / Модель хайлт) -->
+    <!-- Filter Bar: Үйлдвэрлэгч / Модель / Он / Үнэ -->
     <div
         class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-white shadow-inner mb-6"
     >
-        <div
-            id="filter-container"
-            class="flex flex-col md:flex-row md:space-x-4 space-y-3 md:space-y-0 filter-scroll"
-        >
-            <input
-                id="filter-manufacturer"
-                type="text"
-                placeholder="Үйлдвэрлэгчээр хайх (жишээ: Lexus, Toyota...)"
-                class="w-full md:w-1/2 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-red-500 focus:border-red-500"
-            />
-            <input
-                id="filter-model"
-                type="text"
-                placeholder="Моделоор хайх (жишээ: ES300h, CR-V...)"
-                class="w-full md:w-1/2 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-red-500 focus:border-red-500"
-            />
-            <button
-                id="clear-filters"
-                class="md:w-auto w-full bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-semibold px-4 py-2 rounded-lg"
-            >
-                Шүүлтүүр цэвэрлэх
-            </button>
+        <div class="space-y-3">
+            <!-- 1-р мөр: Үйлдвэрлэгч, Модель (select) -->
+            <div class="flex flex-col md:flex-row md:space-x-4 space-y-3 md:space-y-0">
+                <select
+                    id="filter-manufacturer"
+                    class="w-full md:w-1/2 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-red-500 focus:border-red-500"
+                >
+                    <option value="all">Бүх үйлдвэрлэгч</option>
+                </select>
+                <select
+                    id="filter-model"
+                    class="w-full md:w-1/2 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-red-500 focus:border-red-500"
+                >
+                    <option value="all">Бүх модель</option>
+                </select>
+            </div>
+            <!-- 2-р мөр: Он / Үнэ -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <input
+                    id="filter-year-min"
+                    type="number"
+                    placeholder="Он (доод)"
+                    class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-red-500 focus:border-red-500"
+                />
+                <input
+                    id="filter-year-max"
+                    type="number"
+                    placeholder="Он (дээд)"
+                    class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-red-500 focus:border-red-500"
+                />
+                <input
+                    id="filter-price-min"
+                    type="number"
+                    step="0.1"
+                    placeholder="Үнэ мин (сая ₮)"
+                    class="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-red-500 focus:border-red-500"
+                />
+                <div class="flex space-x-2">
+                    <input
+                        id="filter-price-max"
+                        type="number"
+                        step="0.1"
+                        placeholder="Үнэ макс (сая ₮)"
+                        class="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-red-500 focus:border-red-500"
+                    />
+                    <button
+                        id="clear-filters"
+                        class="whitespace-nowrap bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs md:text-sm font-semibold px-3 py-2 rounded-lg"
+                    >
+                        Цэвэрлэх
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -309,7 +337,7 @@
                                     <path
                                         class="opacity-75"
                                         fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938л3-2.647z"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938л3-2.647з"
                                     ></path>
                                 </svg>
                             </span>
@@ -348,7 +376,6 @@
 
     <!-- JavaScript - Local Logic (No Firebase) -->
     <script>
-        // ----------------- ТУСЛАХ ФУНКЦУУД -----------------
         function showCustomAlert(message) {
             const alertBox = document.getElementById("custom-alert");
             const alertMessage = document.getElementById("alert-message");
@@ -370,7 +397,6 @@
             return new Intl.NumberFormat("en-US").format(num);
         }
 
-        // Зургуудыг Base64 болгож хөрвүүлэх
         function fileToBase64(files) {
             return new Promise((resolve, reject) => {
                 const results = [];
@@ -433,14 +459,17 @@
             });
         }
 
-        // ----------------- ДАТА ХАДГАЛАЛТ (localStorage) -----------------
         const STORAGE_KEY = "carsmongolia_cars";
         let allCars = [];
-        let generateDescBtn = null; // AI товч глобал
+        let generateDescBtn = null;
 
-        // шинэ шүүлтүүрийн төлөв
-        let searchManufacturer = "";
-        let searchModel = "";
+        // Шүүлтүүрийн төлөв
+        let selectedManufacturer = "all";
+        let selectedModel = "all";
+        let yearMin = null;
+        let yearMax = null;
+        let priceMin = null;
+        let priceMax = null;
 
         function loadCarsFromStorage() {
             try {
@@ -462,26 +491,127 @@
             }
         }
 
-        // ----------------- РЕНДЕР ФУНКЦ -----------------
+        // ---- Үйлдвэрлэгч / Моделийн option-уудыг автоматаар шинэчлэх ----
+        function updateFilterOptions() {
+            const manSelect = document.getElementById("filter-manufacturer");
+            const modelSelect = document.getElementById("filter-model");
+            if (!manSelect || !modelSelect) return;
+
+            // Үйлдвэрлэгчдийн жагсаалт
+            const manufacturers = [
+                ...new Set(
+                    allCars
+                        .map((c) => (c.manufacturer || "").trim())
+                        .filter((x) => x)
+                ),
+            ].sort((a, b) => a.localeCompare(b, "mn"));
+
+            const prevMan = selectedManufacturer;
+
+            manSelect.innerHTML = "";
+            const allOpt = document.createElement("option");
+            allOpt.value = "all";
+            allOpt.textContent = "Бүх үйлдвэрлэгч";
+            manSelect.appendChild(allOpt);
+
+            manufacturers.forEach((m) => {
+                const opt = document.createElement("option");
+                opt.value = m;
+                opt.textContent = m;
+                manSelect.appendChild(opt);
+            });
+
+            // өмнөх сонголтыг хадгалах
+            if (prevMan && prevMan !== "all" && manufacturers.includes(prevMan)) {
+                selectedManufacturer = prevMan;
+                manSelect.value = prevMan;
+            } else {
+                selectedManufacturer = "all";
+                manSelect.value = "all";
+            }
+
+            // Моделийн жагсаалт (сонгосон үйлдвэрлэгч дээр тулгуурлана)
+            const modelSource =
+                selectedManufacturer === "all"
+                    ? allCars
+                    : allCars.filter(
+                          (c) => c.manufacturer === selectedManufacturer
+                      );
+
+            const models = [
+                ...new Set(
+                    modelSource
+                        .map((c) => (c.model || "").trim())
+                        .filter((x) => x)
+                ),
+            ].sort((a, b) => a.localeCompare(b, "mn"));
+
+            const prevModel = selectedModel;
+
+            modelSelect.innerHTML = "";
+            const allModelOpt = document.createElement("option");
+            allModelOpt.value = "all";
+            allModelOpt.textContent = "Бүх модель";
+            modelSelect.appendChild(allModelOpt);
+
+            models.forEach((m) => {
+                const opt = document.createElement("option");
+                opt.value = m;
+                opt.textContent = m;
+                modelSelect.appendChild(opt);
+            });
+
+            if (
+                prevModel &&
+                prevModel !== "all" &&
+                models.includes(prevModel)
+            ) {
+                selectedModel = prevModel;
+                modelSelect.value = prevModel;
+            } else {
+                selectedModel = "all";
+                modelSelect.value = "all";
+            }
+        }
+
         function renderCarListings() {
             const container = document.getElementById("listings-container");
             container.innerHTML = "";
 
             const filteredCars = allCars.filter((car) => {
-                const man = (car.manufacturer || "").toLowerCase();
-                const mdl = (car.model || "").toLowerCase();
-                const matchMan = man.includes(searchManufacturer);
-                const matchModel = mdl.includes(searchModel);
-                // хоёулаа таарах ёстой; хэрэв нэг тал хоосон бол нөгөөгөөр нь шүүнэ
-                if (searchManufacturer && !matchMan) return false;
-                if (searchModel && !matchModel) return false;
+                const y = Number(car.year);
+                const p = Number(car.price);
+
+                if (
+                    selectedManufacturer !== "all" &&
+                    car.manufacturer !== selectedManufacturer
+                )
+                    return false;
+
+                if (
+                    selectedModel !== "all" &&
+                    car.model !== selectedModel
+                )
+                    return false;
+
+                if (yearMin !== null && y < yearMin) return false;
+                if (yearMax !== null && y > yearMax) return false;
+
+                if (priceMin !== null && p < priceMin) return false;
+                if (priceMax !== null && p > priceMax) return false;
+
                 return true;
             });
 
             if (filteredCars.length === 0) {
                 container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500 font-semibold text-lg">
                     Одоогоор ${
-                        !searchManufacturer && !searchModel
+                        selectedManufacturer === "all" &&
+                        selectedModel === "all" &&
+                        yearMin === null &&
+                        yearMax === null &&
+                        priceMin === null &&
+                        priceMax === null
                             ? "машины зар байхгүй"
                             : "шүүлтүүрээр тохирох зар олдсонгүй"
                     }.
@@ -539,7 +669,6 @@
             });
         }
 
-        // ----------------- МОДАЛ -----------------
         function openModal() {
             document
                 .getElementById("add-car-modal")
@@ -553,8 +682,7 @@
                 "0 файл сонгосон";
         }
 
-        // ----------------- ТАЙЛБАР ҮҮСГЭХ (Gemini – key тавьбал ажиллана) -----------------
-        const LLM_API_KEY = ""; // Хоосон бол зөвхөн алдаа мессеж өгнө
+        const LLM_API_KEY = "";
 
         async function generateDescription() {
             const manufacturer =
@@ -642,7 +770,6 @@
             }
         }
 
-        // ----------------- MAIN INIT -----------------
         document.addEventListener("DOMContentLoaded", () => {
             const form = document.getElementById("add-car-form");
             const openModalBtn =
@@ -658,14 +785,21 @@
             generateDescBtn =
                 document.getElementById("generate-description-btn");
 
-            const manufacturerInput =
+            const manSelect =
                 document.getElementById("filter-manufacturer");
-            const modelInput =
+            const modelSelect =
                 document.getElementById("filter-model");
+            const yearMinInput =
+                document.getElementById("filter-year-min");
+            const yearMaxInput =
+                document.getElementById("filter-year-max");
+            const priceMinInput =
+                document.getElementById("filter-price-min");
+            const priceMaxInput =
+                document.getElementById("filter-price-max");
             const clearFiltersBtn =
                 document.getElementById("clear-filters");
 
-            // Modal listeners
             if (openModalBtn) openModalBtn.addEventListener("click", openModal);
             if (closeModalBtn)
                 closeModalBtn.addEventListener("click", closeModal);
@@ -676,7 +810,6 @@
                     }
                 });
 
-            // File count
             if (carImageFile) {
                 carImageFile.addEventListener("change", () => {
                     const count = carImageFile.files.length;
@@ -685,33 +818,73 @@
                 });
             }
 
-            // Manufacturer / Model хайлт (real-time)
-            if (manufacturerInput) {
-                manufacturerInput.addEventListener("input", () => {
-                    searchManufacturer =
-                        manufacturerInput.value.toLowerCase().trim();
+            // select-үүдэд listener
+            if (manSelect) {
+                manSelect.addEventListener("change", () => {
+                    selectedManufacturer = manSelect.value;
+                    selectedModel = "all"; // үйлдвэрлэгч солигдоход моделийг reset
+                    updateFilterOptions();  // моделийн жагсаалтыг дахин үүсгэнэ
                     renderCarListings();
                 });
             }
-            if (modelInput) {
-                modelInput.addEventListener("input", () => {
-                    searchModel =
-                        modelInput.value.toLowerCase().trim();
+
+            if (modelSelect) {
+                modelSelect.addEventListener("change", () => {
+                    selectedModel = modelSelect.value;
+                    renderCarListings();
+                });
+            }
+
+            if (yearMinInput) {
+                yearMinInput.addEventListener("input", () => {
+                    const v = yearMinInput.value;
+                    yearMin = v ? Number(v) : null;
+                    renderCarListings();
+                });
+            }
+            if (yearMaxInput) {
+                yearMaxInput.addEventListener("input", () => {
+                    const v = yearMaxInput.value;
+                    yearMax = v ? Number(v) : null;
+                    renderCarListings();
+                });
+            }
+            if (priceMinInput) {
+                priceMinInput.addEventListener("input", () => {
+                    const v = priceMinInput.value;
+                    priceMin = v ? Number(v) : null;
+                    renderCarListings();
+                });
+            }
+            if (priceMaxInput) {
+                priceMaxInput.addEventListener("input", () => {
+                    const v = priceMaxInput.value;
+                    priceMax = v ? Number(v) : null;
                     renderCarListings();
                 });
             }
 
             if (clearFiltersBtn) {
                 clearFiltersBtn.addEventListener("click", () => {
-                    searchManufacturer = "";
-                    searchModel = "";
-                    if (manufacturerInput) manufacturerInput.value = "";
-                    if (modelInput) modelInput.value = "";
+                    selectedManufacturer = "all";
+                    selectedModel = "all";
+                    yearMin = null;
+                    yearMax = null;
+                    priceMin = null;
+                    priceMax = null;
+
+                    if (manSelect) manSelect.value = "all";
+                    if (modelSelect) modelSelect.value = "all";
+                    if (yearMinInput) yearMinInput.value = "";
+                    if (yearMaxInput) yearMaxInput.value = "";
+                    if (priceMinInput) priceMinInput.value = "";
+                    if (priceMaxInput) priceMaxInput.value = "";
+
+                    updateFilterOptions();
                     renderCarListings();
                 });
             }
 
-            // Form submit
             if (form) {
                 form.addEventListener("submit", async (e) => {
                     e.preventDefault();
@@ -747,8 +920,9 @@
                             createdAt: new Date().toISOString(),
                         };
 
-                        allCars.unshift(carData); // шинээр нэмэгдсэн эхэнд
+                        allCars.unshift(carData);
                         saveCarsToStorage(allCars);
+                        updateFilterOptions();
                         renderCarListings();
                         showSuccessAlert("Машины зар амжилттай нэмэгдлээ!");
                         closeModal();
@@ -761,7 +935,6 @@
                 });
             }
 
-            // Gemini AI товч
             if (generateDescBtn) {
                 generateDescBtn.addEventListener(
                     "click",
@@ -769,11 +942,11 @@
                 );
             }
 
-            // Анхны дата – localStorage-оос
             allCars = loadCarsFromStorage();
             const loadingMessage =
                 document.getElementById("loading-message");
             if (loadingMessage) loadingMessage.classList.add("hidden");
+            updateFilterOptions();
             renderCarListings();
         });
     </script>
