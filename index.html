@@ -230,8 +230,14 @@
 
         // 6. Save Car function
         async function saveCar(data) {
-            if (!window.db) return;
-            const carsCollectionPath = `/artifacts/${appId}/public/data/cars`;
+            if (!window.db) {
+                showCustomAlert('АЛДАА: Датабааз холбогдоогүй байна.', 'error');
+                return;
+            }
+            if (!userId) {
+                showCustomAlert('АЛДАА: Хэрэглэгч нэвтрээгүй байна.', 'error');
+                return;
+            }
             
             try {
                 // Check total size limit (Approx 1.8MB Base64, safe bet for multiple smaller images)
@@ -240,14 +246,27 @@
                      showCustomAlert('Нийт зургийн хэмжээ хэтэрхий том (1.8MB-аас бага байх ёстой).', 'error');
                      return;
                 }
+                
+                // --- Validation Check (Re-check on server side, though done on client side) ---
+                const priceValue = Number(data.price);
+                const mileageValue = Number(data.mileage);
+                const yearValue = Number(data.year);
+
+                if (isNaN(priceValue) || priceValue <= 0 || isNaN(mileageValue) || mileageValue < 0 || isNaN(yearValue) || yearValue < 1900) {
+                    showCustomAlert('АЛДАА: Үнэ, Он, эсвэл Гүйлтийн зай буруу байна.', 'error');
+                    return;
+                }
+                // --------------------------------------------------------------------------
+
 
                 const carData = {
                     ...data,
                     posterId: userId,
                     createdAt: new Date(),
-                    price: parseFloat(data.price) // Convert price to number (millions)
+                    price: priceValue // Already converted to number
                 };
 
+                const carsCollectionPath = `/artifacts/${appId}/public/data/cars`;
                 await addDoc(collection(window.db, carsCollectionPath), carData);
                 closeModal();
                 showCustomAlert('Таны зар амжилттай нэмэгдлээ!', 'success');
@@ -391,23 +410,32 @@
                     return;
                 }
                 
-                // 2. Data Validation
-                if (isNaN(parseFloat(carData.price)) || parseFloat(carData.price) <= 0) {
-                    showCustomAlert('Үнийг зөв (Сая төгрөгөөр) оруулна уу.', 'error');
+                // 2. Data Validation (Strict check using Number() converter)
+                const priceValue = Number(carData.price);
+                const mileageValue = Number(carData.mileage);
+                const yearValue = Number(carData.year);
+
+                if (isNaN(priceValue) || priceValue <= 0) {
+                    showCustomAlert('АЛДАА: Үнийг Сая ₮-өөр зөв оруулна уу.', 'error');
                     return;
                 }
-                if (isNaN(parseInt(carData.mileage))) {
-                     showCustomAlert('Гүйлтийн зайг зөв оруулна уу.', 'error');
+                if (isNaN(mileageValue) || mileageValue < 0) {
+                    showCustomAlert('АЛДАА: Гүйлтийн зайг зөв оруулна уу.', 'error');
                     return;
                 }
+                if (isNaN(yearValue) || yearValue < 1900) {
+                    showCustomAlert('АЛДАА: Үйлдвэрлэсэн оныг зөв оруулна уу.', 'error');
+                    return;
+                }
+
 
                 // 3. Prepare Final Data
                 const finalCarData = {
                     manufacturer: carData.manufacturer,
                     model: carData.model,
-                    year: carData.year,
-                    mileage: carData.mileage,
-                    price: carData.price,
+                    year: yearValue,
+                    mileage: mileageValue,
+                    price: priceValue,
                     fuelType: carData.fuelType,
                     description: carData.description,
                     imageDatas: imageDatas, 
