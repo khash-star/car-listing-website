@@ -164,14 +164,41 @@
             }
         }
         
-        // **Утилити функц: Файлыг Base64 руу хөрвүүлэх**
+        // **Утилити функц: Файлыг Base64 руу хөрвүүлэх (Шинэчлэгдсэн)**
         function fileToBase64(file) {
-            if (file.size > 800 * 1024) { // Warning limit for 1MB Firestore size limit
-                return Promise.reject(new Error("Файлын хэмжээ хэтэрхий том (800KB-аас бага байх ёстой)."));
-            }
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const MAX_WIDTH = 800; // Максимал өргөн
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > MAX_WIDTH) {
+                            height = height * (MAX_WIDTH / width);
+                            width = MAX_WIDTH;
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Зургийг шахаж, Base64 руу хөрвүүлэх (JPG нь илүү сайн шахагддаг)
+                        const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% чанартай JPG
+
+                        // Шахсан зураг 1MB-аас их бол алдаа өгөх (Base64 нь 1MB-ийн 4/3 орчим байх ёстой)
+                        if (resizedDataUrl.length > 1300000) { 
+                             reject(new Error("Зургийг шахахад ч хэмжээ нь хэтэрхий том байна. Өөр зураг сонгоно уу."));
+                        } else {
+                            resolve(resizedDataUrl);
+                        }
+                    };
+                    img.onerror = (err) => reject(new Error("Зургийн файлыг уншихад алдаа гарлаа."));
+                    img.src = e.target.result;
+                };
                 reader.onerror = error => reject(error);
                 reader.readAsDataURL(file);
             });
@@ -238,10 +265,11 @@
 
                 if (imageFile) {
                     try {
-                        // Async reading of file and conversion to Base64
+                        // Async reading of file and conversion to Base64 (with resizing)
                         imageDataUri = await fileToBase64(imageFile);
                     } catch (error) {
                         console.error("File reading error:", error);
+                        // Show the specific file size error message to the user
                         showCustomAlert(error.message, 'error');
                         return;
                     }
@@ -267,7 +295,6 @@
                     fuelType: carData.fuelType,
                     description: carData.description,
                     imageData: imageDataUri, // Store Base64 string here
-                    // imageUrl талбарыг File upload ашиглаж байгаа тул хасав
                 };
                 
                 // 4. Save
