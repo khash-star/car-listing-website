@@ -95,10 +95,14 @@
                 const posterName = car.posterId === userId ? "Та" : car.posterId.substring(0, 8); 
                 const posterBadge = car.posterId === userId ? 'bg-green-600' : 'bg-gray-700';
                 
-                // Determine image source: prioritize Base64 data over URL link
-                const imageSource = car.imageData 
-                    ? car.imageData 
+                // Determine image source: prioritize first image in array over placeholder
+                const imageSource = car.imageDatas && car.imageDatas.length > 0 
+                    ? car.imageDatas[0] 
                     : (car.imageUrl || 'https://placehold.co/600x300/e5e7eb/6b7280?text=Зураг+Олдсонгүй');
+
+                const imageCount = car.imageDatas ? car.imageDatas.length : 0;
+                const imageCountText = imageCount > 1 ? `Зураг 1/${imageCount}` : '';
+
 
                 carCard.innerHTML = `
                     <div class="relative w-full h-48 bg-gray-200 flex items-center justify-center">
@@ -110,6 +114,8 @@
                             Зарлагч: ${posterName}
                         </div>
                         
+                        ${imageCountText ? `<div class="absolute bottom-3 right-3 bg-black bg-opacity-60 text-white text-xs font-bold px-2 py-1 rounded-full">${imageCountText}</div>` : ''}
+
                         <button class="absolute top-3 right-3 p-2 text-white bg-black bg-opacity-30 rounded-full hover:bg-opacity-50 transition duration-200" aria-label="Хадгалах">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="white" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -147,7 +153,13 @@
             const carsCollectionPath = `/artifacts/${appId}/public/data/cars`;
             
             try {
-                // Attach the current user's ID
+                // Check total size limit (Approx 1.8MB Base64, safe bet for multiple smaller images)
+                const totalBase64Size = data.imageDatas ? data.imageDatas.reduce((sum, d) => sum + d.length, 0) : 0;
+                if (totalBase64Size > 1800000) {
+                     showCustomAlert('Нийт зургийн хэмжээ хэтэрхий том (1.8MB-аас бага байх ёстой).', 'error');
+                     return;
+                }
+
                 const carData = {
                     ...data,
                     posterId: userId,
@@ -164,8 +176,9 @@
             }
         }
         
-        // **Утилити функц: Файлыг Base64 руу хөрвүүлэх (Шинэчлэгдсэн)**
-        function fileToBase64(file) {
+        // **Утилити функц: Файлыг Base64 руу хөрвүүлэх (Олон зургийг боловсруулах)**
+        // FileList-ийг хүлээж авч, амлалт (Promise)-ийн массив буцаана.
+        async function processImageFile(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -189,20 +202,21 @@
                         // Зургийг шахаж, Base64 руу хөрвүүлэх (JPG нь илүү сайн шахагддаг)
                         const resizedDataUrl = canvas.toDataURL('image/jpeg', 0.7); // 70% чанартай JPG
 
-                        // Шахсан зураг 1MB-аас их бол алдаа өгөх (Base64 нь 1MB-ийн 4/3 орчим байх ёстой)
-                        if (resizedDataUrl.length > 1300000) { 
-                             reject(new Error("Зургийг шахахад ч хэмжээ нь хэтэрхий том байна. Өөр зураг сонгоно уу."));
+                        // Ганц зургийн хэмжээ 800KB (Base64-д 1.1MB орчим)
+                        if (resizedDataUrl.length > 1100000) { 
+                             reject(new Error(`"${file.name}" зургийн хэмжээ хэтэрхий том байна (800KB-аас бага байх ёстой).`));
                         } else {
                             resolve(resizedDataUrl);
                         }
                     };
-                    img.onerror = (err) => reject(new Error("Зургийн файлыг уншихад алдаа гарлаа."));
+                    img.onerror = (err) => reject(new Error(`"${file.name}" зургийн файлыг уншихад алдаа гарлаа.`));
                     img.src = e.target.result;
                 };
                 reader.onerror = error => reject(error);
                 reader.readAsDataURL(file);
             });
         }
+
 
         // 5. Custom Alert/Modal functions (since window.alert is forbidden)
         function showCustomAlert(message, type = 'info') {
@@ -259,20 +273,25 @@
                 const carData = {};
                 formData.forEach((value, key) => { carData[key] = value; });
 
-                // 1. Handle File Upload (Image)
-                const imageFile = form.querySelector('#carImageFile').files[0];
-                let imageDataUri = null;
+                // 1. Handle Multiple File Upload (Images)
+                const imageFiles = form.querySelector('#carImageFile').files;
+                const imagePromises = [];
 
-                if (imageFile) {
-                    try {
-                        // Async reading of file and conversion to Base64 (with resizing)
-                        imageDataUri = await fileToBase64(imageFile);
-                    } catch (error) {
-                        console.error("File reading error:", error);
-                        // Show the specific file size error message to the user
-                        showCustomAlert(error.message, 'error');
-                        return;
+                if (imageFiles.length > 0) {
+                    for (const file of imageFiles) {
+                         // Зураг бүрийг Base64 руу хөрвүүлэх үйл явцыг массивд нэмнэ
+                        imagePromises.push(processImageFile(file));
                     }
+                }
+                
+                let imageDatas = [];
+                try {
+                    // Бүх зургийг зэрэг боловсруулах
+                    imageDatas = await Promise.all(imagePromises);
+                } catch (error) {
+                    console.error("File processing error:", error);
+                    showCustomAlert(error.message, 'error');
+                    return;
                 }
                 
                 // 2. Data Validation
@@ -294,7 +313,7 @@
                     price: carData.price,
                     fuelType: carData.fuelType,
                     description: carData.description,
-                    imageData: imageDataUri, // Store Base64 string here
+                    imageDatas: imageDatas, // Store array of Base64 strings here
                 };
                 
                 // 4. Save
@@ -407,11 +426,11 @@
                     </div>
                 </div>
                 
-                <!-- Шинэ File Upload талбар -->
+                <!-- Шинэчлэгдсэн File Upload талбар: multiple нэмсэн -->
                 <div>
-                    <label for="carImageFile" class="block text-sm font-medium text-gray-700">Зураг Оруулах (JPG/PNG)</label>
-                    <!-- Файлын хэмжээний хязгаарыг анхаарна уу. -->
-                    <input type="file" id="carImageFile" name="carImageFile" accept="image/png, image/jpeg" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-600 hover:file:bg-red-100">
+                    <label for="carImageFile" class="block text-sm font-medium text-gray-700">Зураг Оруулах (JPG/PNG) - Олон зураг оруулж болно</label>
+                    <input type="file" id="carImageFile" name="carImageFile" multiple accept="image/png, image/jpeg" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-600 hover:file:bg-red-100">
+                    <p class="text-xs text-gray-500 mt-1">Зураг бүр автоматаар шахагдаж нийт 1.8MB хязгаарт багтана.</p>
                 </div>
 
                 <div>
