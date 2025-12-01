@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="mn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Машин Зарах Вэбсайт</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
         body {
-            font-family: 'Inter', sans-serif;
+            /* энэ код маань зар нэмэх товч нь ажиллахгүй байгааг шалгаж байна */
+            font-family: "Inter", sans-serif;
             background-color: #f6f7f7;
         }
         /* Filter scrollbar hide */
@@ -23,15 +24,28 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-
     <!-- Header & Navigation -->
     <header class="bg-white shadow-md sticky top-0 z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+        <div
+            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center"
+        >
             <h1 class="text-2xl font-bold text-red-600">CarsMongolia.mn</h1>
-            <button id="open-modal-btn" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-red-700 transition duration-150 flex items-center space-x-1">
+            <button
+                id="open-modal-btn"
+                class="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-red-700 transition duration-150 flex items-center space-x-1"
+            >
                 <!-- Plus icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                >
+                    <path
+                        fill-rule="evenodd"
+                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                        clip-rule="evenodd"
+                    />
                 </svg>
                 <span>Зар Оруулах</span>
             </button>
@@ -39,80 +53,200 @@
     </header>
 
     <!-- Filter Bar -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-white shadow-inner mb-6">
-        <div id="filter-container" class="flex space-x-3 overflow-x-auto filter-scroll">
-            <button id="filter-all" class="filter-btn bg-red-600 text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap shadow-md" data-filter="all">Нийт нөхцөл</button>
-            <button class="filter-btn text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition duration-150" data-filter="Бензин">Бензин</button>
-            <button class="filter-btn text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition duration-150" data-filter="Дизель">Дизель</button>
-            <button class="filter-btn text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition duration-150" data-filter="Бензин + Цахилгаан">Бензин + Цахилгаан</button>
-            <button class="filter-btn text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition duration-150" data-filter="Цахилгаан">Цахилгаан</button>
-            <!-- Add more filter buttons here if needed -->
+    <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 bg-white shadow-inner mb-6"
+    >
+        <div
+            id="filter-container"
+            class="flex space-x-3 overflow-x-auto filter-scroll"
+        >
+            <button
+                id="filter-all"
+                class="filter-btn bg-red-600 text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap shadow-md"
+                data-filter="all"
+            >
+                Нийт нөхцөл
+            </button>
+            <button
+                class="filter-btn text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition duration-150"
+                data-filter="Бензин"
+            >
+                Бензин
+            </button>
+            <button
+                class="filter-btn text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition duration-150"
+                data-filter="Дизель"
+            >
+                Дизель
+            </button>
+            <button
+                class="filter-btn text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition duration-150"
+                data-filter="Бензин + Цахилгаан"
+            >
+                Бензин + Цахилгаан
+            </button>
+            <button
+                class="filter-btn text-gray-700 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold whitespace-nowrap transition duration-150"
+                data-filter="Цахилгаан"
+            >
+                Цахилгаан
+            </button>
         </div>
     </div>
 
     <!-- Car Listings Grid -->
-    <main id="listings-container" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
-        <!-- Listings will be rendered here by JavaScript -->
-        <div id="loading-message" class="col-span-full text-center py-20 text-gray-500 font-semibold text-lg">
+    <main
+        id="listings-container"
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12"
+    >
+        <div
+            id="loading-message"
+            class="col-span-full text-center py-20 text-gray-500 font-semibold text-lg"
+        >
             Машины зарнуудыг ачаалж байна...
         </div>
     </main>
 
     <!-- Modal for Adding Car -->
-    <div id="add-car-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-20 overflow-y-auto">
+    <div
+        id="add-car-modal"
+        class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-20 overflow-y-auto"
+    >
         <div class="flex items-center justify-center min-h-screen p-4">
             <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6">
-                <h2 class="text-2xl font-bold text-gray-800 border-b pb-3 mb-4 flex justify-between items-center">
+                <h2
+                    class="text-2xl font-bold text-gray-800 border-b pb-3 mb-4 flex justify-between items-center"
+                >
                     Машины Зар Оруулах
-                    <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <button
+                        id="close-modal-btn"
+                        class="text-gray-400 hover:text-gray-600"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"
+                            />
                         </svg>
                     </button>
                 </h2>
 
-                <!-- Local file warning for debugging -->
-                <div id="local-warning" class="bg-red-100 text-red-700 p-3 rounded-lg text-sm mb-4 hidden">
-                    **АНХААР:** Та энэ кодыг GitHub Pages дээр байршуулаагүй тул Датабааз холболт ажиллахгүй.
-                </div>
-
                 <form id="add-car-form" class="space-y-4">
                     <!-- Manufacturer -->
                     <div>
-                        <label for="manufacturer" class="block text-sm font-medium text-gray-700">Үйлдвэрлэгч</label>
-                        <input type="text" id="manufacturer" name="manufacturer" placeholder="Жишээ: Lexus" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500" required>
+                        <label
+                            for="manufacturer"
+                            class="block text-sm font-medium text-gray-700"
+                            >Үйлдвэрлэгч</label
+                        >
+                        <input
+                            type="text"
+                            id="manufacturer"
+                            name="manufacturer"
+                            placeholder="Жишээ: Lexus"
+                            class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500"
+                            required
+                        />
                     </div>
-                    
+
                     <!-- Model -->
                     <div>
-                        <label for="model" class="block text-sm font-medium text-gray-700">Модель</label>
-                        <input type="text" id="model" name="model" placeholder="Жишээ: ES300h" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500" required>
+                        <label
+                            for="model"
+                            class="block text-sm font-medium text-gray-700"
+                            >Модель</label
+                        >
+                        <input
+                            type="text"
+                            id="model"
+                            name="model"
+                            placeholder="Жишээ: ES300h"
+                            class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500"
+                            required
+                        />
                     </div>
 
                     <!-- Year and Mileage -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="year" class="block text-sm font-medium text-gray-700">Он</label>
-                            <input type="number" id="year" name="year" placeholder="Жишээ: 2019" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500" min="1900" max="2099" required>
+                            <label
+                                for="year"
+                                class="block text-sm font-medium text-gray-700"
+                                >Он</label
+                            >
+                            <input
+                                type="number"
+                                id="year"
+                                name="year"
+                                placeholder="Жишээ: 2019"
+                                class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500"
+                                min="1900"
+                                max="2099"
+                                required
+                            />
                         </div>
                         <div>
-                            <label for="mileage" class="block text-sm font-medium text-gray-700">Гүйлтийн зай (км)</label>
-                            <input type="number" id="mileage" name="mileage" placeholder="Жишээ: 78286" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500" min="0" required>
+                            <label
+                                for="mileage"
+                                class="block text-sm font-medium text-gray-700"
+                                >Гүйлтийн зай (км)</label
+                            >
+                            <input
+                                type="number"
+                                id="mileage"
+                                name="mileage"
+                                placeholder="Жишээ: 78286"
+                                class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500"
+                                min="0"
+                                required
+                            />
                         </div>
                     </div>
 
                     <!-- Price and Fuel Type -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="price" class="block text-sm font-medium text-gray-700">Үнэ (Сая ₮)</label>
-                            <input type="number" id="price" name="price" step="0.1" placeholder="Жишээ: 38.8" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500" min="0.1" required>
+                            <label
+                                for="price"
+                                class="block text-sm font-medium text-gray-700"
+                                >Үнэ (Сая ₮)</label
+                            >
+                            <input
+                                type="number"
+                                id="price"
+                                name="price"
+                                step="0.1"
+                                placeholder="Жишээ: 38.8"
+                                class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500"
+                                min="0.1"
+                                required
+                            />
                         </div>
                         <div>
-                            <label for="fuelType" class="block text-sm font-medium text-gray-700">Түлшний төрөл</label>
-                            <select id="fuelType" name="fuelType" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500" required>
+                            <label
+                                for="fuelType"
+                                class="block text-sm font-medium text-gray-700"
+                                >Түлшний төрөл</label
+                            >
+                            <select
+                                id="fuelType"
+                                name="fuelType"
+                                class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-red-500 focus:border-red-500"
+                                required
+                            >
                                 <option value="Бензин">Бензин</option>
                                 <option value="Дизель">Дизель</option>
-                                <option value="Бензин + Цахилгаан">Бензин + Цахилгаан</option>
+                                <option value="Бензин + Цахилгаан">
+                                    Бензин + Цахилгаан
+                                </option>
                                 <option value="Цахилгаан">Цахилгаан</option>
                                 <option value="Хий">Хий</option>
                                 <option value="Бусад">Бусад</option>
@@ -122,113 +256,163 @@
 
                     <!-- Image Upload -->
                     <div class="flex items-center space-x-3 mt-4">
-                        <label for="carImageFile" class="block text-sm font-medium text-gray-700">Зураг Оруулах (JPG/PNG) - Олон зураг оруулж болно</label>
-                        <input type="file" id="carImageFile" name="carImageFile" multiple accept="image/jpeg, image/png, image/jpg" class="w-full block border border-gray-300 rounded-lg shadow-sm py-2 px-4 file:mr-4 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer" required>
-                        <span id="file-count-display" class="text-sm text-gray-600 whitespace-nowrap">0 файл сонгосон</span>
+                        <label
+                            for="carImageFile"
+                            class="block text-sm font-medium text-gray-700"
+                            >Зураг Оруулах (JPG/PNG) - Олон зураг оруулж
+                            болно</label
+                        >
+                        <input
+                            type="file"
+                            id="carImageFile"
+                            name="carImageFile"
+                            multiple
+                            accept="image/jpeg, image/png, image/jpg"
+                            class="w-full block border border-gray-300 rounded-lg shadow-sm py-2 px-4 file:mr-4 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer"
+                            required
+                        />
+                        <span
+                            id="file-count-display"
+                            class="text-sm text-gray-600 whitespace-nowrap"
+                            >0 файл сонгосон</span
+                        >
                     </div>
-                    <p class="text-xs text-gray-500">Зураг бүр автоматаар шахагдаж нийт 1.8MB хязгаарт багтана.</p>
-                    
+                    <p class="text-xs text-gray-500">
+                        Зураг бүр автоматаар шахагдаж нийт 1.8MB хязгаарт багтана.
+                    </p>
+
                     <!-- Description -->
                     <div class="mt-4">
-                        <label for="description" class="block text-sm font-medium text-gray-700">Нэмэлт мэдээлэл (Өнгө/Тайлбар)</label>
-                        <textarea id="description" name="description" rows="3" placeholder="Жишээ: Шаргал өнгийн суудлын бүрээс" class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2 focus:ring-red-500 focus:border-red-500"></textarea>
+                        <label
+                            for="description"
+                            class="block text-sm font-medium text-gray-700"
+                            >Нэмэлт мэдээлэл (Өнгө/Тайлбар)</label
+                        >
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="3"
+                            placeholder="Жишээ: Шаргал өнгийн суудлын бүрээс"
+                            class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm p-2 focus:ring-red-500 focus:border-red-500"
+                        ></textarea>
                     </div>
 
                     <!-- Gemini AI Button -->
                     <div class="flex justify-between items-center space-x-4">
-                        <button type="button" id="generate-description-btn" class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 transition duration-150 flex items-center space-x-2 w-full justify-center">
+                        <button
+                            type="button"
+                            id="generate-description-btn"
+                            class="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 transition duration-150 flex items-center space-x-2 w-full justify-center"
+                        >
                             <span id="ai-loading" class="hidden">
-                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <svg
+                                    class="animate-spin h-5 w-5 text-white"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        class="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        stroke-width="4"
+                                    ></circle>
+                                    <path
+                                        class="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
                                 </svg>
                             </span>
                             <span id="ai-text">Зар Тайлбар Үүсгэх ✨</span>
                         </button>
                     </div>
-                    
-                    <!-- Submit Button - Disabled by default -->
-                    <button type="submit" id="submit-car-btn" class="w-full bg-red-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-150 disabled:opacity-50" disabled>
+
+                    <!-- Submit Button -->
+                    <button
+                        type="submit"
+                        id="submit-car-btn"
+                        class="w-full bg-red-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-150"
+                    >
                         Зар Нэмэх
                     </button>
                 </form>
 
                 <!-- Custom Alert/Error Message Box -->
-                <div id="custom-alert" class="hidden fixed bottom-4 right-4 bg-red-600 text-white p-4 rounded-lg shadow-xl max-w-sm z-30" role="alert">
+                <div
+                    id="custom-alert"
+                    class="hidden fixed bottom-4 right-4 bg-red-600 text-white p-4 rounded-lg shadow-xl max-w-sm z-30"
+                    role="alert"
+                >
                     <p class="font-bold">АЛДАА:</p>
                     <p id="alert-message" class="text-sm"></p>
-                    <button onclick="document.getElementById('custom-alert').classList.add('hidden')" class="mt-2 text-xs opacity-80 hover:opacity-100">Хаах</button>
+                    <button
+                        onclick="document.getElementById('custom-alert').classList.add('hidden')"
+                        class="mt-2 text-xs opacity-80 hover:opacity-100"
+                    >
+                        Хаах
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript - Firebase & App Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Global configuration variables (Automatically provided by the Canvas environment)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-        const LLM_API_KEY = ""; // Using empty string for automatic API key provision
-
-        // Database and Auth instances
-        let db;
-        let auth;
-        let userId = null;
-        let isAuthenticated = false;
-
-        // Get submit button reference early
-        const submitButton = document.getElementById('submit-car-btn');
-
-        // --- Utility Functions ---
-
+    <!-- JavaScript - Local Logic (No Firebase) -->
+    <script>
+        // ----------------- ТУСЛАХ ФУНКЦУУД -----------------
         function showCustomAlert(message) {
-            const alertBox = document.getElementById('custom-alert');
-            const alertMessage = document.getElementById('alert-message');
+            const alertBox = document.getElementById("custom-alert");
+            const alertMessage = document.getElementById("alert-message");
             alertMessage.textContent = message;
-            alertBox.classList.remove('hidden', 'bg-red-600', 'bg-green-600');
-            alertBox.classList.add('bg-red-600');
+            alertBox.classList.remove("hidden", "bg-red-600", "bg-green-600");
+            alertBox.classList.add("bg-red-600");
         }
 
         function showSuccessAlert(message) {
-            const alertBox = document.getElementById('custom-alert');
-            const alertMessage = document.getElementById('alert-message');
+            const alertBox = document.getElementById("custom-alert");
+            const alertMessage = document.getElementById("alert-message");
             alertMessage.textContent = message;
-            alertBox.classList.remove('hidden', 'bg-red-600', 'bg-green-600');
-            alertBox.classList.add('bg-green-600');
+            alertBox.classList.remove("hidden", "bg-red-600", "bg-green-600");
+            alertBox.classList.add("bg-green-600");
         }
 
         function formatNumber(num) {
-            return new Intl.NumberFormat('en-US').format(num);
+            if (isNaN(num)) return num;
+            return new Intl.NumberFormat("en-US").format(num);
         }
 
-        // Resizes and converts image file(s) to Base64 string(s)
+        // Зургуудыг Base64 болгож хөрвүүлэх
         function fileToBase64(files) {
             return new Promise((resolve, reject) => {
                 const results = [];
                 let filesProcessed = 0;
 
-                if (files.length === 0) {
+                if (!files || files.length === 0) {
                     resolve([]);
                     return;
                 }
 
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
-                    if (file.size > 1.8 * 1024 * 1024) { // Check size before compression attempt
-                        reject(new Error(`Файлын хэмжээ хэтэрхий том (${(file.size / 1024 / 1024).toFixed(2)}MB). 1.8MB-аас бага байх ёстой.`));
-                        return; 
+                    if (file.size > 1.8 * 1024 * 1024) {
+                        reject(
+                            new Error(
+                                `Файлын хэмжээ хэтэрхий том (${(
+                                    file.size /
+                                    1024 /
+                                    1024
+                                ).toFixed(2)}MB). 1.8MB-аас бага байх ёстой.`
+                            )
+                        );
+                        return;
                     }
-
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         const img = new Image();
                         img.onload = () => {
-                            const canvas = document.createElement('canvas');
+                            const canvas = document.createElement("canvas");
                             const MAX_WIDTH = 800;
                             let width = img.width;
                             let height = img.height;
@@ -240,11 +424,13 @@
                             canvas.width = width;
                             canvas.height = height;
 
-                            const ctx = canvas.getContext('2d');
+                            const ctx = canvas.getContext("2d");
                             ctx.drawImage(img, 0, 0, width, height);
 
-                            // Compress to JPEG for smaller file size
-                            const dataURL = canvas.toDataURL('image/jpeg', 0.7); 
+                            const dataURL = canvas.toDataURL(
+                                "image/jpeg",
+                                0.7
+                            );
                             results.push(dataURL);
 
                             filesProcessed++;
@@ -254,387 +440,336 @@
                         };
                         img.src = e.target.result;
                     };
-                    reader.onerror = (error) => {
-                        reject(error);
-                    };
+                    reader.onerror = (error) => reject(error);
                     reader.readAsDataURL(file);
                 }
             });
         }
 
-        // --- Firebase Initialization and Auth ---
+        // ----------------- ДАТА ХАДГАЛАЛТ (localStorage) -----------------
+        const STORAGE_KEY = "carsmongolia_cars";
+        let allCars = [];
+        let currentFilter = "all";
+        let generateDescBtn = null; // AI товч глобал
 
-        if (Object.keys(firebaseConfig).length > 0) {
-            // Only enable debug logging for development
-            // setLogLevel('Debug'); 
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            
-            // Check if running on local file system (C:/ or file://)
-            if (window.location.protocol === 'file:') {
-                document.getElementById('local-warning').classList.remove('hidden');
-            }
-        } else {
-            showCustomAlert('АЛДАА: Firebase тохиргоо олдсонгүй.');
-        }
-
-        async function authenticate() {
-            if (!auth) return;
+        function loadCarsFromStorage() {
             try {
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                showCustomAlert(`Нэвтрэх алдаа: ${error.message}`);
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return [];
+                const arr = JSON.parse(raw);
+                return Array.isArray(arr) ? arr : [];
+            } catch (e) {
+                console.error("localStorage parse error", e);
+                return [];
             }
         }
 
-        if (auth) {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    userId = user.uid;
-                    isAuthenticated = true;
-                    // Enable submit button after successful authentication
-                    if (submitButton) {
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Зар Нэмэх';
-                    }
-                    // Start fetching data and attach listeners once authenticated
-                    setupRealtimeListener();
-                } else {
-                    userId = null;
-                    isAuthenticated = false;
-                    // Show authentication status on button
-                    if (submitButton) {
-                        submitButton.disabled = true;
-                        submitButton.textContent = 'Нэвтрэлт Хүлээж Байна...';
-                    }
-                    authenticate(); // Try to sign in again if signed out
-                }
-            });
+        function saveCarsToStorage(cars) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(cars));
+            } catch (e) {
+                console.error("localStorage save error", e);
+            }
         }
 
-        // --- Data Handling (CRUD) ---
+        // ----------------- РЕНДЕР ФУНКЦ -----------------
+        function renderCarListings(filter) {
+            const container = document.getElementById("listings-container");
+            container.innerHTML = "";
 
-        // Real-time listener for car listings
-        function setupRealtimeListener() {
-            if (!db || !isAuthenticated) return;
-
-            const carsCollectionRef = collection(db, `/artifacts/${appId}/public/data/cars`);
-            const q = query(carsCollectionRef);
-
-            onSnapshot(q, (snapshot) => {
-                const cars = [];
-                snapshot.forEach((doc) => {
-                    cars.push({ id: doc.id, ...doc.data() });
-                });
-                // Sort by creation date (newest first)
-                cars.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate()); 
-                window.allCars = cars;
-                renderCarListings(window.currentFilter || 'all');
-                
-                // Safety check before manipulating DOM elements
-                const loadingMessage = document.getElementById('loading-message');
-                if (loadingMessage) {
-                    loadingMessage.classList.add('hidden');
-                }
-            }, (error) => {
-                showCustomAlert(`Дата ачаалах алдаа: ${error.message}`);
-                
-                // Safety check before manipulating DOM elements
-                const loadingMessage = document.getElementById('loading-message');
-                if (loadingMessage) {
-                    loadingMessage.textContent = 'Дата ачаалахад алдаа гарлаа.';
-                }
+            const filteredCars = allCars.filter((car) => {
+                if (filter === "all") return true;
+                return car.fuelType === filter;
             });
-        }
 
-        async function saveCar(formData) {
-            if (!db || !isAuthenticated) {
-                showCustomAlert('АЛДАА: Датабааз холбогдоогүй байна.');
+            if (filteredCars.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500 font-semibold text-lg">
+                    Одоогоор ${
+                        filter === "all"
+                            ? "машины зар байхгүй"
+                            : "сонгосон нөхцөлөөр зар олдсонгүй"
+                    }.
+                 </div>`;
                 return;
             }
 
-            // Temporarily disable button and show loading text
-            submitButton.disabled = true;
-            submitButton.textContent = 'Оруулж байна...';
+            filteredCars.forEach((car) => {
+                const firstImage =
+                    car.imageDatas && car.imageDatas.length > 0
+                        ? car.imageDatas[0]
+                        : "";
+                const imageCount = car.imageDatas
+                    ? car.imageDatas.length
+                    : 0;
 
-            const carData = {
-                manufacturer: formData.manufacturer,
-                model: formData.model,
-                year: Number(formData.year),
-                mileage: Number(formData.mileage),
-                price: Number(formData.price),
-                fuelType: formData.fuelType,
-                description: formData.description,
-                imageDatas: formData.imageDatas, // Array of Base64 strings
-                posterId: userId,
-                createdAt: new Date()
-            };
-
-            try {
-                const carsCollectionRef = collection(db, `/artifacts/${appId}/public/data/cars`);
-                await addDoc(carsCollectionRef, carData);
-                showSuccessAlert('Машины зар амжилттай нэмэгдлээ!');
-                closeModal();
-            } catch (error) {
-                showCustomAlert(`Зар хадгалах алдаа: ${error.message}`);
-            } finally {
-                // Re-enable button and reset text
-                submitButton.disabled = false;
-                submitButton.textContent = 'Зар Нэмэх';
-            }
-        }
-        
-        // --- Rendering and UI Logic ---
-
-        function renderCarListings(filter) {
-            const container = document.getElementById('listings-container');
-            container.innerHTML = '';
-            
-            const filteredCars = window.allCars.filter(car => {
-                if (filter === 'all') return true;
-                return car.fuelType === filter;
-            });
-            
-            if (filteredCars.length === 0) {
-                 container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500 font-semibold text-lg">
-                    Одоогоор ${filter === 'all' ? 'машины зар байхгүй' : 'сонгосон нөхцөлөөр зар олдсонгүй'}.
-                 </div>`;
-                 return;
-            }
-
-            filteredCars.forEach(car => {
-                const firstImage = car.imageDatas && car.imageDatas.length > 0 ? car.imageDatas[0] : '';
-                const imageCount = car.imageDatas ? car.imageDatas.length : 0;
-                
-                const card = document.createElement('div');
-                card.className = 'bg-white rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-xl transform hover:-translate-y-1';
+                const card = document.createElement("div");
+                card.className =
+                    "bg-white rounded-xl shadow-lg overflow-hidden transition duration-300 hover:shadow-xl transform hover:-translate-y-1";
                 card.innerHTML = `
-                    <!-- Image Area -->
                     <div class="relative h-56 bg-gray-200 overflow-hidden">
-                        ${firstImage ? 
-                            `<img src="${firstImage}" alt="${car.manufacturer} ${car.model}" class="w-full h-full object-cover">` 
-                            : `<div class="w-full h-full flex items-center justify-center text-gray-500 text-lg font-bold">Зураг Олдсонгүй</div>`
+                        ${
+                            firstImage
+                                ? `<img src="${firstImage}" alt="${car.manufacturer} ${car.model}" class="w-full h-full object-cover">`
+                                : `<div class="w-full h-full flex items-center justify-center text-gray-500 text-lg font-bold">Зураг Олдсонгүй</div>`
                         }
                         <div class="absolute top-3 right-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
                             ${car.fuelType}
                         </div>
-                        ${imageCount > 1 ? `<div class="absolute bottom-3 left-3 bg-black bg-opacity-60 text-white text-xs font-medium px-2 py-1 rounded-full">Зураг 1/${imageCount}</div>` : ''}
+                        ${
+                            imageCount > 1
+                                ? `<div class="absolute bottom-3 left-3 bg-black bg-opacity-60 text-white text-xs font-medium px-2 py-1 rounded-full">Зураг 1/${imageCount}</div>`
+                                : ""
+                        }
                     </div>
-
-                    <!-- Details -->
                     <div class="p-5 space-y-3">
-                        <h3 class="text-xl font-bold text-gray-900">${car.manufacturer} ${car.model}</h3>
-                        
+                        <h3 class="text-xl font-bold text-gray-900">${
+                            car.manufacturer
+                        } ${car.model}</h3>
                         <div class="flex flex-wrap text-sm text-gray-600 space-x-4">
                             <p><strong>Он:</strong> ${car.year}</p>
-                            <p><strong>Гүйлтийн зай:</strong> ${formatNumber(car.mileage)} км</p>
+                            <p><strong>Гүйлтийн зай:</strong> ${formatNumber(
+                                car.mileage
+                            )} км</p>
                         </div>
-                        
                         <p class="text-3xl font-extrabold text-red-600 border-t pt-3">
                             ${formatNumber(car.price)} сая ₮
                         </p>
-                        
-                        <p class="text-sm text-gray-700 mt-2 line-clamp-2">${car.description}</p>
+                        <p class="text-sm text-gray-700 mt-2 line-clamp-2">${
+                            car.description || ""
+                        }</p>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
 
-        // --- Modal and Event Listeners ---
-
+        // ----------------- МОДАЛ -----------------
         function openModal() {
-            document.getElementById('add-car-modal').classList.remove('hidden');
+            document
+                .getElementById("add-car-modal")
+                .classList.remove("hidden");
         }
 
         function closeModal() {
-            document.getElementById('add-car-modal').classList.add('hidden');
-            document.getElementById('add-car-form').reset(); // Clear form on close
-            document.getElementById('file-count-display').textContent = '0 файл сонгосон';
+            document.getElementById("add-car-modal").classList.add("hidden");
+            document.getElementById("add-car-form").reset();
+            document.getElementById("file-count-display").textContent =
+                "0 файл сонгосон";
         }
-        
-        // --- Form Submission Logic ---
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('add-car-form');
-            const openModalBtn = document.getElementById('open-modal-btn');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-            const modalOverlay = document.getElementById('add-car-modal');
-            const carImageFile = document.getElementById('carImageFile');
-            const fileCountDisplay = document.getElementById('file-count-display');
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const generateDescBtn = document.getElementById('generate-description-btn');
-
-            // Attach modal listeners
-            if (openModalBtn) openModalBtn.addEventListener('click', openModal);
-            if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-            if (modalOverlay) modalOverlay.addEventListener('click', (e) => {
-                if (e.target.id === 'add-car-modal') {
-                    closeModal();
-                }
-            });
-            
-            // File input listener to update count
-            if (carImageFile) {
-                carImageFile.addEventListener('change', () => {
-                    const count = carImageFile.files.length;
-                    fileCountDisplay.textContent = `${count} файл сонгосон`;
-                });
-            }
-
-            // Filter button listener
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const filter = btn.dataset.filter;
-                    window.currentFilter = filter;
-                    
-                    // Update button styling
-                    filterButtons.forEach(b => b.classList.replace('bg-red-600', 'bg-gray-200'));
-                    btn.classList.replace('bg-gray-200', 'bg-red-600');
-                    btn.classList.replace('text-white', 'text-white');
-                    btn.classList.remove('text-gray-700');
-
-                    // If 'all' is clicked, ensure the style is reset
-                    if (filter === 'all') {
-                         filterButtons.forEach(b => b.classList.add('text-gray-700'));
-                         btn.classList.replace('bg-gray-200', 'bg-red-600');
-                         btn.classList.replace('text-gray-700', 'text-white');
-                    } else {
-                         filterButtons.forEach(b => b.classList.add('text-gray-700'));
-                         btn.classList.replace('bg-gray-200', 'bg-red-600');
-                         btn.classList.replace('text-gray-700', 'text-white');
-                    }
-                    
-                    renderCarListings(filter);
-                });
-            });
-
-            // Form submission
-            if (form) {
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    
-                    if (!isAuthenticated) {
-                         showCustomAlert('АЛДАА: Хэрэглэгч нэвтрээгүй эсвэл датабааз холбогдоогүй.');
-                         return;
-                    }
-                    
-                    const data = new FormData(form);
-                    const files = carImageFile.files;
-                    
-                    if (files.length === 0) {
-                        showCustomAlert('Зургаа заавал оруулна уу.');
-                        return;
-                    }
-                    
-                    try {
-                        // 1. Process images
-                        const imageDatas = await fileToBase64(files);
-
-                        // 2. Prepare data for Firestore
-                        const carData = {
-                            manufacturer: data.get('manufacturer').trim(),
-                            model: data.get('model').trim(),
-                            year: Number(data.get('year')),
-                            mileage: Number(data.get('mileage')),
-                            price: Number(data.get('price')),
-                            fuelType: data.get('fuelType'),
-                            description: data.get('description').trim(),
-                            imageDatas: imageDatas 
-                        };
-
-                        // 3. Save to Firestore
-                        await saveCar(carData);
-                        
-                    } catch (error) {
-                         showCustomAlert(`Зар оруулах алдаа: ${error.message}`);
-                    }
-                });
-            }
-
-            // Gemini API Handler
-            if (generateDescBtn) {
-                generateDescBtn.addEventListener('click', generateDescription);
-            }
-
-            // Initial filter styling
-            if (document.querySelector('.filter-btn[data-filter="all"]')) {
-                document.querySelector('.filter-btn[data-filter="all"]').classList.replace('bg-gray-200', 'bg-red-600');
-                document.querySelector('.filter-btn[data-filter="all"]').classList.replace('text-gray-700', 'text-white');
-            }
-        });
-        
-        // --- Gemini Integration Logic ---
+        // ----------------- ТАЙЛБАР ҮҮСГЭХ (Gemini – хүсвэл key тавиад ашигла) -----------------
+        const LLM_API_KEY = ""; // Хоосон байвал AI товч зүгээр алдаа мессеж өгнө
 
         async function generateDescription() {
-            const manufacturer = document.getElementById('manufacturer').value.trim();
-            const model = document.getElementById('model').value.trim();
-            const year = document.getElementById('year').value.trim();
-            const mileage = document.getElementById('mileage').value.trim();
-            const price = document.getElementById('price').value.trim();
-            const descriptionField = document.getElementById('description');
-            const loadingIndicator = document.getElementById('ai-loading');
-            const aiTextSpan = document.getElementById('ai-text');
+            const manufacturer =
+                document.getElementById("manufacturer").value.trim();
+            const model =
+                document.getElementById("model").value.trim();
+            const year = document.getElementById("year").value.trim();
+            const mileage =
+                document.getElementById("mileage").value.trim();
+            const price = document.getElementById("price").value.trim();
+            const descriptionField =
+                document.getElementById("description");
+            const loadingIndicator =
+                document.getElementById("ai-loading");
+            const aiTextSpan = document.getElementById("ai-text");
 
             if (!manufacturer || !model || !year || !price) {
-                showCustomAlert('Тайлбар үүсгэхийн тулд Үйлдвэрлэгч, Модель, Он, Үнийг бөглөнө үү.');
+                showCustomAlert(
+                    "Тайлбар үүсгэхийн тулд Үйлдвэрлэгч, Модель, Он, Үнийг бөглөнө үү."
+                );
                 return;
             }
 
-            // Set loading state
-            loadingIndicator.classList.remove('hidden');
-            aiTextSpan.textContent = 'Үүсгэж байна...';
-            generateDescBtn.disabled = true;
+            if (!LLM_API_KEY) {
+                showCustomAlert(
+                    "Gemini API key тохируулаагүй байна. LLM_API_KEY хувьсагчид key-ээ тавина уу."
+                );
+                return;
+            }
+
+            loadingIndicator.classList.remove("hidden");
+            aiTextSpan.textContent = "Үүсгэж байна...";
+            if (generateDescBtn) generateDescBtn.disabled = true;
 
             const userPrompt = `Машин зарах зарны сэтгэл татам, мэргэжлийн түвшний тайлбарыг Монгол хэлээр бичээд өгнө үү.
-            Үйлдвэрлэгч: ${manufacturer}, Модель: ${model}, Он: ${year}, Гүйлтийн зай: ${formatNumber(mileage)} км, Үнэ: ${formatNumber(price)} сая төгрөг.
-            Зөвхөн тайлбарыг гаргана уу.`;
+            Үйлдвэрлэгч: ${manufacturer}, Модель: ${model}, Он: ${year}, Гүйлтийн зай: ${formatNumber(
+                mileage
+            )} км, Үнэ: ${formatNumber(
+                price
+            )} сая төгрөг. Зөвхөн тайлбарыг гаргана уу.`;
 
             try {
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${LLM_API_KEY}`;
-                
+
                 const payload = {
                     contents: [{ parts: [{ text: userPrompt }] }],
                     systemInstruction: {
-                        parts: [{ text: "Act as a professional car sales copywriter for the Mongolian market. Generate a compelling, detailed, and polite sales description." }]
+                        parts: [
+                            {
+                                text: "Act as a professional car sales copywriter for the Mongolian market. Generate a compelling, detailed, and polite sales description.",
+                            },
+                        ],
                     },
                 };
 
                 const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
                 });
 
                 if (!response.ok) {
                     const errorJson = await response.json();
-                    throw new Error(`API дуудлагын алдаа: ${errorJson.error?.message || response.statusText}`);
+                    throw new Error(
+                        `API дуудлагын алдаа: ${
+                            errorJson.error?.message || response.statusText
+                        }`
+                    );
                 }
 
                 const result = await response.json();
-                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text || 'Тайлбар үүсгэх боломжгүй.';
+                const generatedText =
+                    result.candidates?.[0]?.content?.parts?.[0]?.text ||
+                    "Тайлбар үүсгэх боломжгүй.";
 
-                // Update description field
                 descriptionField.value = generatedText.trim();
-                showSuccessAlert('Тайлбар амжилттай үүсгэгдлээ!');
-
+                showSuccessAlert("Тайлбар амжилттай үүсгэгдлээ!");
             } catch (error) {
                 showCustomAlert(`Gemini API алдаа: ${error.message}`);
                 console.error("Gemini API Error:", error);
-
             } finally {
-                // Reset loading state
-                loadingIndicator.classList.add('hidden');
-                aiTextSpan.textContent = 'Зар Тайлбар Үүсгэх ✨';
-                generateDescBtn.disabled = false;
+                loadingIndicator.classList.add("hidden");
+                aiTextSpan.textContent = "Зар Тайлбар Үүсгэх ✨";
+                if (generateDescBtn) generateDescBtn.disabled = false;
             }
         }
 
+        // ----------------- MAIN INIT -----------------
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("add-car-form");
+            const openModalBtn =
+                document.getElementById("open-modal-btn");
+            const closeModalBtn =
+                document.getElementById("close-modal-btn");
+            const modalOverlay =
+                document.getElementById("add-car-modal");
+            const carImageFile =
+                document.getElementById("carImageFile");
+            const fileCountDisplay =
+                document.getElementById("file-count-display");
+            const filterButtons =
+                document.querySelectorAll(".filter-btn");
+            generateDescBtn =
+                document.getElementById("generate-description-btn");
+
+            // Modal listeners
+            if (openModalBtn) openModalBtn.addEventListener("click", openModal);
+            if (closeModalBtn)
+                closeModalBtn.addEventListener("click", closeModal);
+            if (modalOverlay)
+                modalOverlay.addEventListener("click", (e) => {
+                    if (e.target.id === "add-car-modal") {
+                        closeModal();
+                    }
+                });
+
+            // File count
+            if (carImageFile) {
+                carImageFile.addEventListener("change", () => {
+                    const count = carImageFile.files.length;
+                    fileCountDisplay.textContent =
+                        count + " файл сонгосон";
+                });
+            }
+
+            // Filter buttons
+            filterButtons.forEach((btn) => {
+                btn.addEventListener("click", () => {
+                    const filter = btn.dataset.filter;
+                    currentFilter = filter;
+
+                    filterButtons.forEach((b) => {
+                        b.classList.remove(
+                            "bg-red-600",
+                            "text-white"
+                        );
+                        b.classList.add("bg-gray-200", "text-gray-700");
+                    });
+
+                    btn.classList.remove("bg-gray-200", "text-gray-700");
+                    btn.classList.add("bg-red-600", "text-white");
+
+                    renderCarListings(filter);
+                });
+            });
+
+            // Form submit
+            if (form) {
+                form.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+
+                    const data = new FormData(form);
+                    const files = carImageFile.files;
+
+                    if (!files || files.length === 0) {
+                        showCustomAlert("Зургаа заавал оруулна уу.");
+                        return;
+                    }
+
+                    try {
+                        const imageDatas = await fileToBase64(files);
+
+                        const carData = {
+                            id:
+                                Date.now().toString() +
+                                "-" +
+                                Math.random().toString(36).slice(2),
+                            manufacturer: data
+                                .get("manufacturer")
+                                .trim(),
+                            model: data.get("model").trim(),
+                            year: Number(data.get("year")),
+                            mileage: Number(data.get("mileage")),
+                            price: Number(data.get("price")),
+                            fuelType: data.get("fuelType"),
+                            description: (data
+                                .get("description") || ""
+                            ).trim(),
+                            imageDatas,
+                            createdAt: new Date().toISOString(),
+                        };
+
+                        allCars.unshift(carData); // шинээр нэмэгдсэн эхэнд
+                        saveCarsToStorage(allCars);
+                        renderCarListings(currentFilter);
+                        showSuccessAlert("Машины зар амжилттай нэмэгдлээ!");
+                        closeModal();
+                    } catch (error) {
+                        showCustomAlert(
+                            `Зар оруулах алдаа: ${error.message}`
+                        );
+                        console.error(error);
+                    }
+                });
+            }
+
+            // Gemini AI товч
+            if (generateDescBtn) {
+                generateDescBtn.addEventListener(
+                    "click",
+                    generateDescription
+                );
+            }
+
+            // Анхны дата – localStorage-оос уншина
+            allCars = loadCarsFromStorage();
+            const loadingMessage =
+                document.getElementById("loading-message");
+            if (loadingMessage) loadingMessage.classList.add("hidden");
+            renderCarListings(currentFilter);
+        });
     </script>
 </body>
 </html>
