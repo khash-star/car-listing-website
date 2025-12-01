@@ -31,16 +31,23 @@
 
         // IMPORTANT: Global variables provided by the Canvas environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        // __firebase_config is a JSON string, must be parsed. If undefined, use empty object.
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         if (Object.keys(firebaseConfig).length > 0) {
-            setLogLevel('Debug');
-            window.app = initializeApp(firebaseConfig);
-            window.db = getFirestore(window.app);
-            window.auth = getAuth(window.app);
+            // Check if running in the Canvas environment where these variables are defined
+            if (typeof __firebase_config !== 'undefined') {
+                setLogLevel('Debug');
+                window.app = initializeApp(firebaseConfig);
+                window.db = getFirestore(window.app);
+                window.auth = getAuth(window.app);
+                console.log("Firebase: Canvas орчинд амжилттай инициалчлагдлаа.");
+            } else {
+                console.error("Firebase: Глобал хувьсагчууд олдсонгүй. Боломжгүй орчинд ажиллаж байна.");
+            }
         } else {
-            console.error("Firebase Configuration is missing.");
+            console.error("Firebase: Configuration is missing.");
         }
 
         let userId = null;
@@ -53,6 +60,7 @@
 
         // 1. Authentication
         async function authenticate() {
+            if (!window.auth) return; // Add check here
             try {
                 if (initialAuthToken) {
                     await signInWithCustomToken(window.auth, initialAuthToken);
@@ -66,7 +74,7 @@
 
         // 2. Data Fetching and Rendering
         function setupDataListener() {
-            if (!window.db) return;
+            if (!window.db) return; // Add check here
             const carsCollectionPath = `/artifacts/${appId}/public/data/cars`;
             const q = query(collection(window.db, carsCollectionPath));
 
@@ -336,15 +344,19 @@
 
 
         // 9. Event Listeners and Initialization
-        onAuthStateChanged(window.auth, (user) => {
-            if (user) {
-                userId = user.uid;
-                document.getElementById('user-id-display').textContent = `Хэрэглэгчийн ID: ${userId.substring(0, 8)}...`;
-                setupDataListener();
-            } else {
-                console.log("No user signed in.");
-            }
-        });
+        
+        // This is the line that caused the error, we need to check if window.auth exists
+        if (typeof window.auth !== 'undefined') {
+            onAuthStateChanged(window.auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    document.getElementById('user-id-display').textContent = `Хэрэглэгчийн ID: ${userId.substring(0, 8)}...`;
+                    setupDataListener();
+                } else {
+                    console.log("No user signed in.");
+                }
+            });
+        }
         
         if (Object.keys(firebaseConfig).length > 0) {
             authenticate();
@@ -411,7 +423,14 @@
             const modalOverlay = document.getElementById('modal-overlay');
             const carImageFile = document.getElementById('carImageFile');
 
-            if (openModalBtn) openModalBtn.addEventListener('click', openModal);
+            // --- ЗАР ОРУУЛАХ ТОВЧИЙН EVENT LISTENER ---
+            if (openModalBtn) {
+                openModalBtn.addEventListener('click', openModal);
+            } else {
+                 console.error("ERROR: 'open-modal-btn' ID-тай товч олдсонгүй.");
+            }
+            // ----------------------------------------
+
             if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
             if (modalOverlay) modalOverlay.addEventListener('click', closeModal);
             if (carImageFile) carImageFile.addEventListener('change', updateFileCount);
