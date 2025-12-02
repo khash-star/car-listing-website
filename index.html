@@ -562,458 +562,244 @@
   </div>
 
   <!-- FIREBASE + APP LOGIC -->
-  <script type="module">
-    // ---------- CAR BRAND / MODEL LIST ----------
-    const CAR_DATA = {
-      Toyota: [
-        "Prius",
-        "Prius Alpha",
-        "Aqua",
-        "Alphard",
-        "Crown",
-        "Camry",
-        "Harrier",
-        "CHR",
-        "RAV4",
-        "Land Cruiser 200",
-        "Land Cruiser 300",
-        "Fielder"
-      ],
-      Lexus: ["RX350", "RX450h", "NX300h", "ES300h", "GX460", "LX570"],
-      Honda: ["Fit", "Vezel", "CR-V", "Stepwgn", "Odyssey", "Accord", "Shuttle"],
-      Hyundai: ["Sonata", "Avante", "Tucson", "Santa Fe", "Palisade", "Staria"],
-      Kia: ["Sorento", "Sportage", "Carnival", "K5", "K7", "Bongo3"],
-      "Mercedes-Benz": ["C200", "E200", "S350", "GLC250", "GLS400"],
-      BMW: ["320i", "520i", "740Li", "X3", "X5"],
-      Audi: ["A4", "A6", "A8", "Q5", "Q7"],
-      Nissan: ["X-Trail", "Serena", "Note", "Cube", "Elgrand"],
-      Subaru: ["Forester", "Legacy", "Outback", "Impreza"],
-      Volkswagen: ["Golf", "Passat", "Tiguan"],
-      Mazda: ["Axela", "Atenza", "CX-5", "CX-8"],
-      Chevrolet: ["Cruze", "Volt", "Camaro"],
-      Ford: ["Focus", "Explorer", "Mustang"],
-      Jeep: ["Compass", "Cherokee", "Wrangler"],
-      Tesla: ["Model S", "Model 3", "Model X", "Model Y"]
-    };
+ <script type="module">
+  // ---------- FIREBASE IMPORT ----------
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp,
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import {
+    getAuth,
+    signInAnonymously,
+    onAuthStateChanged,
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-    const manufacturerSelect = document.getElementById("manufacturer");
-    const modelSelect = document.getElementById("model");
+  // ---------- FIREBASE CONFIG ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyAEW1YnJ_xm_YnPzW9y1iSmdQIrgOsfjlA",
+    authDomain: "carsmongolia-d410a.firebaseapp.com",
+    projectId: "carsmongolia-d410a",
+    storageBucket: "carsmongolia-d410a.appspot.com",
+    messagingSenderId: "483533885994",
+    appId: "1:483533885994:web:e6718b4668f1896cf32953",
+    measurementId: "G-8BR11G8E5Z",
+  };
 
-    function populateManufacturers() {
-      Object.keys(CAR_DATA)
-        .sort((a, b) => a.localeCompare(b, "mn"))
-        .forEach((brand) => {
-          const opt = document.createElement("option");
-          opt.value = brand;
-          opt.textContent = brand;
-          manufacturerSelect.appendChild(opt);
-        });
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  // ---------- UI ЭЛЕМЕНТҮҮД ----------
+  const modal = document.getElementById("add-car-modal");
+  const openBtn = document.getElementById("open-modal-btn");
+  const closeBtn = document.getElementById("close-modal-btn");
+  const form = document.getElementById("add-car-form");
+
+  const fileInput = document.getElementById("carImages");
+  const fileCountDisplay = document.getElementById("file-count-display");
+
+  const submitBtn = document.getElementById("submit-car-btn");
+  const authStatus = document.getElementById("auth-status");
+
+  const alertBox = document.getElementById("custom-alert");
+  const alertTitle = document.getElementById("alert-title");
+  const alertMessage = document.getElementById("alert-message");
+
+  // ---------- ЖИЖИГ АЛЕРТ ФУНКЦ ----------
+  function showAlert(message, type = "error") {
+    alertMessage.textContent = message;
+    alertTitle.textContent = type === "success" ? "АМЖИЛТ" : "АЛДАА";
+    alertBox.classList.remove("hidden", "bg-red-600", "bg-green-600");
+    alertBox.classList.add(type === "success" ? "bg-green-600" : "bg-red-600");
+  }
+
+  // ---------- MODAL ОНГОЙЛГОХ / ХААХ ----------
+  openBtn.addEventListener("click", () => {
+    modal.classList.remove("hidden");
+  });
+
+  closeBtn.addEventListener("click", () => {
+    modal.classList.add("hidden");
+  });
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.classList.add("hidden");
+  });
+
+  // ---------- ФАЙЛ СОНГОХ ----------
+  fileInput.addEventListener("change", () => {
+    const count = fileInput.files.length;
+    fileCountDisplay.textContent =
+      count === 0 ? "Одоогоор зураг сонгоогүй байна." : `${count} файл сонгосон`;
+  });
+
+  // ---------- FIREBASE AUTH (АНОНИМ) ----------
+  let currentUserId = null;
+
+  async function startAuth() {
+    try {
+      await signInAnonymously(auth);
+    } catch (err) {
+      console.error(err);
+      authStatus.textContent = "Firebase нэвтрэлт амжилтгүй.";
+      showAlert("Firebase нэвтрэлт амжилтгүй: " + err.message);
     }
+  }
 
-    function populateModels(brand) {
-      modelSelect.innerHTML = "";
-      if (!brand || !CAR_DATA[brand]) {
-        const opt = document.createElement("option");
-        opt.value = "";
-        opt.textContent = "Эхлээд үйлдвэрлэгч сонгоно уу";
-        modelSelect.appendChild(opt);
-        return;
-      }
-      CAR_DATA[brand].forEach((m) => {
-        const opt = document.createElement("option");
-        opt.value = m;
-        opt.textContent = m;
-        modelSelect.appendChild(opt);
-      });
-    }
-
-    manufacturerSelect.addEventListener("change", () => {
-      populateModels(manufacturerSelect.value);
-    });
-
-    populateManufacturers();
-
-    // ---------- FIREBASE ----------
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import {
-      getAuth,
-      signInAnonymously,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      doc,
-      updateDoc,
-      serverTimestamp,
-      getDocs,
-      query,
-      orderBy
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    import {
-      getStorage,
-      ref,
-      uploadBytes,
-      getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAEW1YnJ_xm_YnPzW9y1iSmdQIrgOsfjlA",
-      authDomain: "carsmongolia-d410a.firebaseapp.com",
-      projectId: "carsmongolia-d410a",
-      storageBucket: "carsmongolia-d410a.appspot.com",
-      messagingSenderId: "483533885994",
-      appId: "1:483533885994:web:e6718b4668f1896cf32953",
-      measurementId: "G-8BR11G8E5Z"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-    const auth = getAuth(app);
-
-    let currentUserId = null;
-
-    const submitBtn = document.getElementById("submit-car-btn");
-    const authStatus = document.getElementById("auth-status");
-
-    function showAlert(message, type = "error") {
-      const box = document.getElementById("custom-alert");
-      const msg = document.getElementById("alert-message");
-      const title = document.getElementById("alert-title");
-      msg.textContent = message;
-      title.textContent = type === "success" ? "АМЖИЛТ" : "АЛДАА";
-      box.classList.remove("hidden", "bg-red-600", "bg-green-600");
-      box.classList.add(type === "success" ? "bg-green-600" : "bg-red-600");
-    }
-
-    async function startAuth() {
-      try {
-        await signInAnonymously(auth);
-      } catch (err) {
-        console.error(err);
-        authStatus.textContent = "Firebase нэвтрэлт амжилтгүй.";
-        showAlert("Firebase нэвтрэлт амжилтгүй: " + err.message);
-      }
-    }
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUserId = user.uid;
-        authStatus.textContent = "Firebase-т нэвтэрсэн. Зар оруулж болно.";
-        submitBtn.disabled = false;
-      } else {
-        currentUserId = null;
-        submitBtn.disabled = true;
-        authStatus.textContent = "Firebase-т холбогдож байна...";
-        startAuth();
-      }
-    });
-
-    // ---------- MODAL UI (ЗАР ОРУУЛАХ) ----------
-    const modal = document.getElementById("add-car-modal");
-    const openBtn = document.getElementById("open-modal-btn");
-    const closeBtn = document.getElementById("close-modal-btn");
-    const form = document.getElementById("add-car-form");
-    const fileInput = document.getElementById("carImages");
-    const fileCountDisplay = document.getElementById("file-count-display");
-
-    openBtn.addEventListener("click", () => {
-      modal.classList.remove("hidden");
-    });
-
-    closeBtn.addEventListener("click", () => {
-      modal.classList.add("hidden");
-    });
-
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) {
-        modal.classList.add("hidden");
-      }
-    });
-
-    fileInput.addEventListener("change", () => {
-      const count = fileInput.files.length;
-      fileCountDisplay.textContent =
-        count === 0 ? "Одоогоор зураг сонгоогүй байна." : `${count} файл сонгосон`;
-    });
-
-    // ---------- FORM SUBMIT (Firestore + Storage) ----------
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!currentUserId) {
-        showAlert("Firebase-т нэвтэртэл жаахан хүлээгээд дахин оролдоно уу.");
-        return;
-      }
-
-      const files = fileInput.files;
-      if (!files || files.length === 0) {
-        showAlert("Ядаж нэг зураг заавал сонгоно уу.");
-        return;
-      }
-
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUserId = user.uid;
+      authStatus.textContent = "Firebase-т нэвтэрсэн. Зар оруулж болно.";
+      submitBtn.disabled = false;
+    } else {
+      currentUserId = null;
       submitBtn.disabled = true;
-      submitBtn.textContent = "Илгээж байна...";
-      authStatus.textContent = "Зар хадгалж байна, түр хүлээнэ үү...";
+      authStatus.textContent = "Firebase-т холбогдож байна...";
+      startAuth();
+    }
+  });
 
-      try {
-        const formData = new FormData(form);
+  // ---------- ЗУРГИЙГ BASE64 БОЛГОХ ФУНКЦ ----------
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        // dataURL → "data:image/jpeg;base64,AAAA..." хэлбэртэй
+        const dataUrl = reader.result;
+        // хүсвэл "data:..." хэсгийг салгаж болно
+        const base64 = String(dataUrl).split(",")[1];
+        resolve({
+          mimeType: file.type,
+          base64,
+        });
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
 
-        const carDocData = {
-          manufacturer: formData.get("manufacturer"),
-          model: formData.get("model"),
-          year: Number(formData.get("year")),
-          importYear: formData.get("importYear")
-            ? Number(formData.get("importYear"))
-            : null,
-          condition: formData.get("condition"),
-          bodyType: formData.get("bodyType") || "",
-          doors: formData.get("doors") || "",
-          mileage: Number(formData.get("mileage")),
-          price: Number(formData.get("price")),
-          fuelType: formData.get("fuelType"),
-          driveType: formData.get("driveType") || "",
-          transmission: formData.get("transmission") || "",
-          engineVolume: formData.get("engineVolume") || "",
-          exteriorColor: formData.get("exteriorColor") || "",
-          interiorColor: formData.get("interiorColor") || "",
-          leasing: formData.get("leasing") || "",
-          youtubeUrl: formData.get("youtubeUrl") || "",
-          tiktokUrl: formData.get("tiktokUrl") || "",
-          description: formData.get("description"),
-          sellerName: formData.get("sellerName"),
-          sellerEmail: formData.get("sellerEmail") || "",
-          sellerPhone: formData.get("sellerPhone"),
-          messengerWhatsapp: formData.get("messengerWhatsapp") === "on",
-          messengerTelegram: formData.get("messengerTelegram") === "on",
-          messengerFacebook: formData.get("messengerFacebook") === "on",
-          imageUrls: [],
-          createdAt: serverTimestamp(),
-          posterId: currentUserId
-        };
+  // ---------- ФОРМ ИЛГЭЭХ ----------
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        const carsRef = collection(db, "cars");
-        const docRef = await addDoc(carsRef, carDocData);
+    if (!currentUserId) {
+      showAlert("Firebase-т нэвтэртэл жаахан хүлээгээд дахин оролдоно уу.");
+      return;
+    }
 
-        const uploadedUrls = [];
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
-          const storagePath = `cars/${docRef.id}/${i}-${file.name}`;
-          const storageRef = ref(storage, storagePath);
-          await uploadBytes(storageRef, file);
-          const url = await getDownloadURL(storageRef);
-          uploadedUrls.push(url);
+    const files = fileInput.files;
+    if (!files || files.length === 0) {
+      showAlert("Ядаж нэг зураг заавал сонгоно уу.");
+      return;
+    }
+
+    // Одоохондоо аюулгүй байлгахын тулд хамгийн ихдээ 3 зураг
+    if (files.length > 3) {
+      showAlert("Одоогоор хамгийн ихдээ 3 зураг оруулах боломжтой.");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Илгээж байна...";
+    authStatus.textContent = "Зар хадгалж байна, түр хүлээнэ үү...";
+
+    try {
+      const formData = new FormData(form);
+
+      // --- Зургуудыг Base64 болгон хөрвүүлэх ---
+      const base64Images = [];
+      let totalBytesApprox = 0;
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
+        if (!file.type.startsWith("image/")) {
+          showAlert("Зөвхөн зураг (JPG/PNG) файл оруулна уу.");
+          throw new Error("Not image");
         }
 
-        await updateDoc(doc(db, "cars", docRef.id), {
-          imageUrls: uploadedUrls
+        const { mimeType, base64 } = await fileToBase64(file);
+
+        // Баримтын 1MB лимитээс хэтрэхгүй байлгахын тулд ойролцоогоор тооцоолно
+        const bytes = (base64.length * 3) / 4;
+        totalBytesApprox += bytes;
+
+        if (totalBytesApprox > 800000) {
+          showAlert(
+            "Зургийн нийт хэмжээ хэтэрлээ (ойролцоогоор > 800KB). Илүү жижиг зураг сонгоно уу."
+          );
+          throw new Error("Too big");
+        }
+
+        base64Images.push({
+          mimeType,
+          data: base64,
         });
+      }
 
-        showAlert("Машины зар амжилттай нэмэгдлээ!", "success");
-        authStatus.textContent = "Зар амжилттай хадгалагдлаа.";
-        form.reset();
-        fileCountDisplay.textContent = "Одоогоор зураг сонгоогүй байна.";
-        modal.classList.add("hidden");
+      // --- МАШИНЫ МЭДЭЭЛЭЛ БЭЛДЭХ ---
+      const carDocData = {
+        manufacturer: formData.get("manufacturer"),
+        model: formData.get("model"),
+        year: Number(formData.get("year")),
+        importYear: formData.get("importYear")
+          ? Number(formData.get("importYear"))
+          : null,
+        condition: formData.get("condition"),
+        bodyType: formData.get("bodyType") || "",
+        doors: formData.get("doors") || "",
+        mileage: Number(formData.get("mileage")),
+        price: Number(formData.get("price")),
+        fuelType: formData.get("fuelType"),
+        driveType: formData.get("driveType") || "",
+        transmission: formData.get("transmission") || "",
+        engineVolume: formData.get("engineVolume") || "",
+        exteriorColor: formData.get("exteriorColor") || "",
+        interiorColor: formData.get("interiorColor") || "",
+        leasing: formData.get("leasing") || "",
+        youtubeUrl: formData.get("youtubeUrl") || "",
+        tiktokUrl: formData.get("tiktokUrl") || "",
+        description: formData.get("description"),
+        sellerName: formData.get("sellerName"),
+        sellerEmail: formData.get("sellerEmail") || "",
+        sellerPhone: formData.get("sellerPhone"),
+        messengerWhatsapp: formData.get("messengerWhatsapp") === "on",
+        messengerTelegram: formData.get("messengerTelegram") === "on",
+        messengerFacebook: formData.get("messengerFacebook") === "on",
 
-        // Шинэ зар нэмэгдсэний дараа жагсаалтаа дахин ачаана
-        await loadCarList();
-      } catch (err) {
+        // Base64 зурагнууд
+        images: base64Images, // [{mimeType, data}, ...]
+        createdAt: serverTimestamp(),
+        posterId: currentUserId,
+      };
+
+      const carsRef = collection(db, "cars");
+      await addDoc(carsRef, carDocData);
+
+      showAlert("Машины зар амжилттай нэмэгдлээ!", "success");
+      authStatus.textContent = "Зар амжилттай хадгалагдлаа.";
+
+      form.reset();
+      fileCountDisplay.textContent = "Одоогоор зураг сонгоогүй байна.";
+      modal.classList.add("hidden");
+    } catch (err) {
+      if (err && err.message === "Too big") {
+        // аль хэдийн алерт харуулсан
+      } else if (err && err.message === "Not image") {
+        // аль хэдийн алерт
+      } else {
         console.error(err);
-        showAlert("Зар илгээхэд алдаа гарлаа: " + err.message);
+        showAlert("Зар илгээхэд алдаа гарлаа: " + (err?.message || err));
         authStatus.textContent = "Алдаа гарлаа.";
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Зар Нэмэх";
       }
-    });
-
-    // ---------- ЖАГСААЛТ + ДЭЛГЭРЭНГҮЙ (A ХУВИЛБАР) ----------
-    const carListContainer = document.getElementById("car-list");
-    const emptyStateBox = document.getElementById("empty-state");
-
-    const carCache = {};
-
-    const detailModal = document.getElementById("car-detail-modal");
-    const detailCloseBtn = document.getElementById("detail-close-btn");
-    const detailTitle = document.getElementById("detail-title");
-    const detailMainImage = document.getElementById("detail-main-image");
-    const detailThumbs = document.getElementById("detail-thumbs");
-    const detailPrice = document.getElementById("detail-price");
-    const detailBasic = document.getElementById("detail-basic");
-    const detailMileage = document.getElementById("detail-mileage");
-    const detailFuel = document.getElementById("detail-fuel");
-    const detailDrive = document.getElementById("detail-drive");
-    const detailTransmission = document.getElementById("detail-transmission");
-    const detailEngine = document.getElementById("detail-engine");
-    const detailColors = document.getElementById("detail-colors");
-    const detailLeasing = document.getElementById("detail-leasing");
-    const detailSeller = document.getElementById("detail-seller");
-    const detailPhone = document.getElementById("detail-phone");
-    const detailContactChannels = document.getElementById("detail-contact-channels");
-    const detailDescription = document.getElementById("detail-description");
-
-    function formatPrice(price) {
-      if (typeof price === "number") {
-        return price.toLocaleString("mn-MN");
-      }
-      if (!price) return "-";
-      const num = Number(price);
-      return Number.isNaN(num) ? String(price) : num.toLocaleString("mn-MN");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Зар Нэмэх";
     }
-
-    async function loadCarList() {
-      if (!carListContainer) return;
-
-      try {
-        const carsRef = collection(db, "cars");
-        const q = query(carsRef, orderBy("createdAt", "desc"));
-        const snapshot = await getDocs(q);
-
-        carListContainer.innerHTML = "";
-        Object.keys(carCache).forEach((k) => delete carCache[k]);
-
-        if (snapshot.empty) {
-          emptyStateBox.classList.remove("hidden");
-          return;
-        }
-        emptyStateBox.classList.add("hidden");
-
-        snapshot.forEach((docSnap) => {
-          const car = docSnap.data();
-          const id = docSnap.id;
-          carCache[id] = car;
-
-          const mainImage =
-            car.imageUrls && car.imageUrls.length
-              ? car.imageUrls[0]
-              : "https://via.placeholder.com/640x360?text=No+Image";
-
-          const priceText = formatPrice(car.price);
-
-          const card = document.createElement("article");
-          card.className =
-            "bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer flex flex-col";
-          card.dataset.id = id;
-          card.innerHTML = `
-            <div class="relative pb-[56%] overflow-hidden">
-              <img src="${mainImage}" alt="${(car.manufacturer || "") +
-            " " +
-            (car.model || "")}" class="absolute inset-0 w-full h-full object-cover" />
-            </div>
-            <div class="p-4 space-y-1">
-              <div class="flex items-center justify-between">
-                <h3 class="font-semibold text-gray-900 text-base">
-                  ${(car.manufacturer || "") + " " + (car.model || "")}
-                </h3>
-                <span class="text-red-600 font-bold text-sm">
-                  ${priceText} сая ₮
-                </span>
-              </div>
-              <p class="text-xs text-gray-500">
-                Он: ${car.year || "-"} • Гүйлт: ${car.mileage || "-"} км • Түлш: ${
-            car.fuelType || "-"
-          }
-              </p>
-              <p class="text-xs text-gray-400 truncate">
-                ${car.description || ""}
-              </p>
-            </div>
-          `;
-          carListContainer.appendChild(card);
-        });
-      } catch (err) {
-        console.error("Жагсаалт ачаалахад алдаа:", err);
-      }
-    }
-
-    // Карт дээр дарахад дэлгэрэнгүй нээх
-    if (carListContainer) {
-      carListContainer.addEventListener("click", (e) => {
-        const card = e.target.closest("article[data-id]");
-        if (!card) return;
-        const id = card.dataset.id;
-        const car = carCache[id];
-        if (!car) return;
-        openDetailModal(car);
-      });
-    }
-
-    function openDetailModal(car) {
-      const mainImage =
-        car.imageUrls && car.imageUrls.length
-          ? car.imageUrls[0]
-          : "https://via.placeholder.com/640x360?text=No+Image";
-
-      detailTitle.textContent = `${car.manufacturer || ""} ${
-        car.model || ""
-      }`;
-      detailMainImage.src = mainImage;
-      detailMainImage.alt = detailTitle.textContent;
-
-      detailThumbs.innerHTML = "";
-      if (car.imageUrls && car.imageUrls.length) {
-        car.imageUrls.forEach((url, idx) => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.className =
-            "w-16 h-16 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0";
-          btn.innerHTML = `<img src="${url}" class="w-full h-full object-cover" />`;
-          btn.addEventListener("click", () => {
-            detailMainImage.src = url;
-          });
-          detailThumbs.appendChild(btn);
-        });
-      }
-
-      const priceText = formatPrice(car.price);
-      detailPrice.textContent = `${priceText} сая ₮`;
-      detailBasic.textContent = `${car.year || "-"} он • ${
-        car.bodyType || "Төрөл тодорхойгүй"
-      } • ${car.condition || ""}`;
-
-      detailMileage.textContent = `${car.mileage || "-"} км`;
-      detailFuel.textContent = car.fuelType || "-";
-      detailDrive.textContent = car.driveType || "-";
-      detailTransmission.textContent = car.transmission || "-";
-      detailEngine.textContent = car.engineVolume || "-";
-      detailColors.textContent = `${car.exteriorColor || "-"} / ${
-        car.interiorColor || "-"
-      }`;
-      detailLeasing.textContent = car.leasing || "-";
-
-      detailSeller.textContent = car.sellerName || "";
-      detailPhone.textContent = car.sellerPhone
-        ? `Утас: ${car.sellerPhone}`
-        : "";
-
-      const channels = [];
-      if (car.messengerWhatsapp) channels.push("Whatsapp");
-      if (car.messengerTelegram) channels.push("Telegram");
-      if (car.messengerFacebook) channels.push("Facebook Messenger");
-      detailContactChannels.textContent =
-        channels.length > 0
-          ? "Холбогдох сувгууд: " + channels.join(", ")
-          : "";
-
-      detailDescription.textContent = car.description || "";
-
-      detailModal.classList.remove("hidden");
-    }
-
-    detailCloseBtn.addEventListener("click", () => {
-      detailModal.classList.add("hidden");
-    });
-
-    detailModal.addEventListener("click", (e) => {
-      if (e.target === detailModal) {
-        detailModal.classList.add("hidden");
-      }
-    });
-
-    // Эхлээд жагсаалтыг ачаална
-    loadCarList();
-  </script>
+  });
+</script>
 </body>
 </html>
-
