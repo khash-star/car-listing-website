@@ -47,9 +47,9 @@
   </main>
 
   <!-- 1: ЗАР ОРУУЛАХ МОДАЛ (өмнөх том форм) -->
-  <div
-    id="add-car-modal"
-    class="fixed inset-0 bg-black bg-opacity-60 hidden z-20 flex items-center justify-center px-4 py-6 overflow-y-auto"
+ <div
+  id="add-car-modal"
+  class="fixed inset-0 bg-black bg-opacity-60 hidden z-20 flex items-start justify-center px-4 py-6 overflow-y-auto"
   >
     <div
       class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full relative p-6 md:p-8"
@@ -887,7 +887,7 @@
           const mainImage =
             car.imageUrls && car.imageUrls.length
               ? car.imageUrls[0]
-              : "https://via.placeholder.com/640x360?text=No+Image";
+              : "https://dummyimage.com/640x360/eeeeee/aaaaaa&text=No+Image";
 
           const priceText = formatPrice(car.price);
 
@@ -943,7 +943,7 @@
       const mainImage =
         car.imageUrls && car.imageUrls.length
           ? car.imageUrls[0]
-          : "https://via.placeholder.com/640x360?text=No+Image";
+          : "https://dummyimage.com/640x360/eeeeee/aaaaaa&text=No+Image";
 
       detailTitle.textContent = `${car.manufacturer || ""} ${
         car.model || ""
@@ -1016,3 +1016,4 @@
   </script>
 </body>
 </html>
+
