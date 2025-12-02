@@ -669,48 +669,133 @@
 
   <!-- FIREBASE + APP LOGIC -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    // ---------- ЗУРАГ ЖИЖИГРҮҮЛЭХ ФУНКЦ ----------
-// file: хэрэглэгчийн сонгосон зураг
-// maxW / maxH: хамгийн их өргөн / өндөр (pixel)
-// quality: JPEG чанар (0 - 1, 0.7 орчим OK)
-async function resizeImage(file, maxW = 1280, maxH = 960, quality = 0.7) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
+  // ---------- FIREBASE IMPORT-УУД ----------
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import {
+    getAuth,
+    signInAnonymously,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    doc,
+    updateDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+  import {
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL
+  } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
-    reader.onload = (e) => {
+  // ---------- FIREBASE CONFIG ----------
+  const firebaseConfig = {
+    apiKey: "AIzaSyAevI1nvJ_xm_YnP2w9YliSmdQIrg0sfIjA",
+    authDomain: "carsmongolia-d410a.firebaseapp.com",
+    projectId: "carsmongolia-d410a",
+    storageBucket: "carsmongolia-d410a.appspot.com",
+    messagingSenderId: "483533885994",
+    appId: "1:483533885994:web:e6718b4668f1896cf32953",
+    measurementId: "G-8BR11G8E5Z"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+  const auth = getAuth(app);
+
+  // ---------- ЗУРАГ ЖИЖИГРҮҮЛЭХ ТОХИРГОО ----------
+  const MAX_TOTAL_SIZE = 800 * 1024; // 800KB орчим
+  const MAX_WIDTH = 1280;            // урт тал максимум
+  const MAX_HEIGHT = 1280;
+  const JPEG_QUALITY = 0.8;          // 0–1 хооронд
+
+  const fileInput = document.getElementById("carImages");
+  const fileCountDisplay = document.getElementById("file-count-display");
+
+  // Жижиг болгосон файлууд энд хадгалагдана
+  let resizedFiles = [];
+
+  function resizeImageFile(file, maxWidth = MAX_WIDTH, maxHeight = MAX_HEIGHT, quality = JPEG_QUALITY) {
+    return new Promise((resolve, reject) => {
       const img = new Image();
-      img.onload = () => {
-        let width = img.width;
-        let height = img.height;
+      const reader = new FileReader();
 
-        // Хэмжээ багасгах харьцаа
-        const ratio = Math.min(maxW / width, maxH / height, 1);
-        width = Math.round(width * ratio);
-        height = Math.round(height * ratio);
+      reader.onload = (e) => {
+        img.onload = () => {
+          let { width, height } = img;
 
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, width, height);
+          // Харьцааг хадгалаад багасгана
+          const ratio = Math.min(maxWidth / width, maxHeight / height, 1);
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.round(width * ratio);
+          canvas.height = Math.round(height * ratio);
 
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) {
-              reject(new Error("Зургаас blob үүссэнгүй"));
-              return;
-            }
-            // Жижигрүүлсэн blob-оор шинэ File үүсгэнэ
-            const resizedFile = new File([blob], file.name, {
-              type: "image/jpeg",
-            });
-            resolve(resizedFile);
-          },
-          "image/jpeg",
-          quality
-        );
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error("canvas.toBlob null буцаалаа"));
+                return;
+              }
+              // Blob → File
+              const newFile = new File([blob], file.name, {
+                type: "image/jpeg",
+                lastModified: Date.now(),
+              });
+              resolve(newFile);
+            },
+            "image/jpeg",
+            quality
+          );
+        };
+
+        img.onerror = reject;
+        img.src = e.target.result;
       };
+
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Файл сонгоход автоматаар resize хийх
+  fileInput.addEventListener("change", async () => {
+    const originalFiles = Array.from(fileInput.files || []);
+    resizedFiles = [];
+
+    for (const file of originalFiles) {
+      if (!file.type.startsWith("image/")) continue;
+      try {
+        const small = await resizeImageFile(file);
+        resizedFiles.push(small);
+      } catch (err) {
+        console.error("Resize алдаа:", err);
+      }
+    }
+
+    const totalBytes = resizedFiles.reduce((sum, f) => sum + f.size, 0);
+    if (fileCountDisplay) {
+      const kb = (totalBytes / 1024).toFixed(0);
+      fileCountDisplay.textContent =
+        resizedFiles.length === 0
+          ? "Одоогоор зураг сонгоогүй байна."
+          : `${resizedFiles.length} зураг, нийт ~${kb} KB`;
+    }
+
+    if (totalBytes > MAX_TOTAL_SIZE) {
+      showAlert(
+        "Зургийн нийт хэмжээ хэтэрлээ (ойролцоогоор > 800KB). Илүү жижиг зураг сонгоно уу.",
+        "error"
+      );
+    }
+  });
+
 
       img.onerror = () => reject(new Error("Зураг уншихад алдаа гарлаа"));
       img.src = e.target.result;
@@ -810,11 +895,82 @@ async function resizeImage(file, maxW = 1280, maxH = 960, quality = 0.7) {
     });
 
     // --- ФАЙЛ СОНГОХ ---
-    fileInput.addEventListener("change", () => {
-      const count = fileInput.files.length;
-      fileCountDisplay.textContent =
-        count === 0 ? "Одоогоор зураг сонгоогүй байна." : `${count} файл сонгосон`;
-    });
+     form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // ... бусад талбар шалгах код чинь хэвээрээ ...
+
+    // Жижиг болгосон файл байвал түүнийг, үгүй бол оригиналыг ашиглая
+    const uploadFiles =
+      resizedFiles.length > 0 ? resizedFiles : Array.from(fileInput.files || []);
+
+    if (!uploadFiles.length) {
+      showAlert("Ядаж нэг зураг заавал сонгоно уу.", "error");
+      return;
+    }
+
+    // Нийт хэмжээ дахин шалгана (аюулгүй байдлаар)
+    const totalBytes = uploadFiles.reduce((sum, f) => sum + f.size, 0);
+    if (totalBytes > MAX_TOTAL_SIZE) {
+      showAlert(
+        "Зургийн нийт хэмжээ хэтэрлээ (ойролцоогоор > 800KB). Илүү жижиг зураг сонгоно уу.",
+        "error"
+      );
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Илгээж байна...";
+    authStatus.textContent = "Зар хадгалж байна, түр хүлээнэ үү...";
+
+    try {
+      const formData = new FormData(form);
+
+      // --- Firestore руу текст мэдээлэл хадгалах чинь яг хэвээрээ ---
+
+      const carDocData = {
+        // ... чиний өмнөх талбарууд ...
+        createdAt: serverTimestamp(),
+        posterId: currentUserId
+      };
+
+      const carsRef = collection(db, "cars");
+      const docRef = await addDoc(carsRef, carDocData);
+
+      // --- Зургуудыг uploadFiles ашиглаад upload хийнэ ---
+      const uploadedUrls = [];
+      for (let i = 0; i < uploadFiles.length; i++) {
+        const file = uploadFiles[i];
+        const storagePath = `cars/${docRef.id}/${i}-${file.name}`;
+        const storageRef = ref(storage, storagePath);
+
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        uploadedUrls.push(url);
+      }
+
+      await updateDoc(doc(db, "cars", docRef.id), {
+        imageUrls: uploadedUrls
+      });
+
+      showAlert("Машины зар амжилттай нэмэгдлээ!", "success");
+      authStatus.textContent = "Зар амжилттай хадгалагдлаа.";
+      form.reset();
+      if (fileCountDisplay) {
+        fileCountDisplay.textContent = "Одоогоор зураг сонгоогүй байна.";
+      }
+      modal.classList.add("hidden");
+    } catch (err) {
+      console.error(err);
+      showAlert("Зар илгээхэд алдаа гарлаа: " + err.message, "error");
+      authStatus.textContent = "Алдаа гарлаа.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Зар Нэмэх";
+    }
+  });
+</script>
+
 
     // --- FIREBASE AUTH (АНОНИМ) ---
     let currentUserId = null;
