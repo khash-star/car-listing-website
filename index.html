@@ -29,28 +29,134 @@
     </div>
   </header>
 
-  <!-- MAIN: ЖАГСААЛТ + ХООСОН ТАЙЛБАР -->
-  <main class="max-w-6xl mx-auto px-4 py-8 space-y-6">
-    <div
-      id="empty-state"
-      class="border-2 border-dashed border-gray-300 rounded-xl bg-white p-8 text-center text-gray-500"
-    >
-      Энд дараагийн алхам дээр машины жагсаалт, шүүлтүүр, дэлгэрэнгүй хуудас
-      гарна. Одоогоор Firestore дотор хадгалсан машинуудыг уншиж байна.
-    </div>
+  <!-- FILTER BAR -->
+  <section class="bg-white border-b">
+    <div class="max-w-6xl mx-auto px-4 py-4 grid gap-4 md:grid-cols-5 items-end">
+      <div class="md:col-span-2">
+        <label class="block text-xs font-semibold text-gray-600 mb-1">
+          Үйлдвэрлэгч
+        </label>
+        <select
+          id="filter-manufacturer"
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          <option value="">Бүгд</option>
+        </select>
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-xs font-semibold text-gray-600 mb-1">
+          Модель
+        </label>
+        <select
+          id="filter-model"
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          <option value="">Бүгд</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">
+          Түлш
+        </label>
+        <select
+          id="filter-fuel"
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          <option value="">Бүгд</option>
+          <option value="Бензин">Бензин</option>
+          <option value="Дизель">Дизель</option>
+          <option value="Хибрид">Хибрид</option>
+          <option value="Цахилгаан">Цахилгаан</option>
+          <option value="Хий">Хий</option>
+        </select>
+      </div>
 
-    <section id="car-list" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <!-- JS-ээр картаар бөглөгдөнө (одоо хоосон) -->
-    </section>
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">
+          Он (min)
+        </label>
+        <input
+          id="filter-year-min"
+          type="number"
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          placeholder="2005"
+        />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">
+          Он (max)
+        </label>
+        <input
+          id="filter-year-max"
+          type="number"
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          placeholder="2025"
+        />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">
+          Үнэ (min, сая ₮)
+        </label>
+        <input
+          id="filter-price-min"
+          type="number"
+          step="0.1"
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          placeholder="10"
+        />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1">
+          Үнэ (max, сая ₮)
+        </label>
+        <input
+          id="filter-price-max"
+          type="number"
+          step="0.1"
+          class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+          placeholder="200"
+        />
+      </div>
+      <div class="flex gap-2">
+        <button
+          id="filter-apply"
+          class="flex-1 bg-red-600 text-white text-sm font-semibold px-3 py-2 rounded-lg shadow hover:bg-red-700"
+        >
+          Шүүх
+        </button>
+        <button
+          id="filter-reset"
+          class="flex-1 bg-gray-100 text-gray-700 text-sm font-semibold px-3 py-2 rounded-lg hover:bg-gray-200"
+        >
+          Цэвэрлэх
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LISTINGS -->
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <div
+      id="loading-message"
+      class="text-center text-gray-500 py-10 text-sm"
+    >
+      Машины зарнуудыг ачаалж байна...
+    </div>
+    <div
+      id="listings-container"
+      class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+    >
+      <!-- JS-ээр картууд энд үүснэ -->
+    </div>
   </main>
 
-  <!-- 1: ЗАР ОРУУЛАХ МОДАЛ -->
+  <!-- ЗАР ОРУУЛАХ МОДАЛ -->
   <div
     id="add-car-modal"
     class="fixed inset-0 bg-black bg-opacity-60 hidden z-20 flex items-start justify-center px-4 py-6 overflow-y-auto"
   >
     <div
-      class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full relative p-6 md:p-8"
+      class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full relative p-6 md:p-8 mt-10 mb-10"
     >
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-2xl font-bold text-gray-900">Машины Зар Оруулах</h2>
@@ -75,9 +181,10 @@
           </h3>
           <div class="grid md:grid-cols-2 gap-4">
             <div>
-              <label for="manufacturer" class="block text-sm font-medium text-gray-700">
-                Үйлдвэрлэгч *
-              </label>
+              <label
+                for="manufacturer"
+                class="block text-sm font-medium text-gray-700"
+              >Үйлдвэрлэгч *</label>
               <select
                 id="manufacturer"
                 name="manufacturer"
@@ -85,13 +192,13 @@
                 required
               >
                 <option value="">Сонгох</option>
-                <!-- JS-ээр дүүргэнэ -->
               </select>
             </div>
             <div>
-              <label for="model" class="block text-sm font-medium text-gray-700">
-                Модель *
-              </label>
+              <label
+                for="model"
+                class="block text-sm font-medium text-gray-700"
+              >Модель *</label>
               <select
                 id="model"
                 name="model"
@@ -102,9 +209,10 @@
               </select>
             </div>
             <div>
-              <label for="year" class="block text-sm font-medium text-gray-700">
-                Үйлдвэрлэсэн он *
-              </label>
+              <label
+                for="year"
+                class="block text-sm font-medium text-gray-700"
+              >Үйлдвэрлэсэн он *</label>
               <input
                 type="number"
                 id="year"
@@ -116,9 +224,10 @@
               />
             </div>
             <div>
-              <label for="importYear" class="block text-sm font-medium text-gray-700">
-                Орж ирсэн он
-              </label>
+              <label
+                for="importYear"
+                class="block text-sm font-medium text-gray-700"
+              >Орж ирсэн он</label>
               <input
                 type="number"
                 id="importYear"
@@ -132,9 +241,10 @@
 
           <div class="grid md:grid-cols-3 gap-4 mt-4">
             <div>
-              <label for="condition" class="block text-sm font-medium text-gray-700">
-                Нөхцөл *
-              </label>
+              <label
+                for="condition"
+                class="block text-sm font-medium text-gray-700"
+              >Нөхцөл *</label>
               <select
                 id="condition"
                 name="condition"
@@ -148,9 +258,10 @@
               </select>
             </div>
             <div>
-              <label for="bodyType" class="block text-sm font-medium text-gray-700">
-                Төрөл
-              </label>
+              <label
+                for="bodyType"
+                class="block text-sm font-medium text-gray-700"
+              >Төрөл</label>
               <select
                 id="bodyType"
                 name="bodyType"
@@ -165,9 +276,10 @@
               </select>
             </div>
             <div>
-              <label for="doors" class="block text-sm font-medium text-gray-700">
-                Хаалга
-              </label>
+              <label
+                for="doors"
+                class="block text-sm font-medium text-gray-700"
+              >Хаалга</label>
               <select
                 id="doors"
                 name="doors"
@@ -190,9 +302,10 @@
           </h3>
           <div class="grid md:grid-cols-2 gap-4">
             <div>
-              <label for="mileage" class="block text-sm font-medium text-gray-700">
-                Гүйлт (км) *
-              </label>
+              <label
+                for="mileage"
+                class="block text-sm font-medium text-gray-700"
+              >Гүйлт (км) *</label>
               <input
                 type="number"
                 id="mileage"
@@ -203,9 +316,10 @@
               />
             </div>
             <div>
-              <label for="price" class="block text-sm font-medium text-gray-700">
-                Үнэ (сая ₮) *
-              </label>
+              <label
+                for="price"
+                class="block text-sm font-medium text-gray-700"
+              >Үнэ (сая ₮) *</label>
               <input
                 type="number"
                 id="price"
@@ -217,9 +331,10 @@
               />
             </div>
             <div>
-              <label for="fuelType" class="block text-sm font-medium text-gray-700">
-                Түлш *
-              </label>
+              <label
+                for="fuelType"
+                class="block text-sm font-medium text-gray-700"
+              >Түлш *</label>
               <select
                 id="fuelType"
                 name="fuelType"
@@ -235,9 +350,10 @@
               </select>
             </div>
             <div>
-              <label for="driveType" class="block text-sm font-medium text-gray-700">
-                Хөтлөгч
-              </label>
+              <label
+                for="driveType"
+                class="block text-sm font-medium text-gray-700"
+              >Хөтлөгч</label>
               <select
                 id="driveType"
                 name="driveType"
@@ -250,9 +366,10 @@
               </select>
             </div>
             <div>
-              <label for="transmission" class="block text-sm font-medium text-gray-700">
-                Хурдны хайрцаг
-              </label>
+              <label
+                for="transmission"
+                class="block text-sm font-medium text-gray-700"
+              >Хурдны хайрцаг</label>
               <select
                 id="transmission"
                 name="transmission"
@@ -265,9 +382,10 @@
               </select>
             </div>
             <div>
-              <label for="engineVolume" class="block text-sm font-medium text-gray-700">
-                Мотор багтаамж (л)
-              </label>
+              <label
+                for="engineVolume"
+                class="block text-sm font-medium text-gray-700"
+              >Мотор багтаамж (л)</label>
               <input
                 type="text"
                 id="engineVolume"
@@ -280,9 +398,10 @@
 
           <div class="grid md:grid-cols-3 gap-4 mt-4">
             <div>
-              <label for="exteriorColor" class="block text-sm font-medium text-gray-700">
-                Гадна өнгө
-              </label>
+              <label
+                for="exteriorColor"
+                class="block text-sm font-medium text-gray-700"
+              >Гадна өнгө</label>
               <input
                 type="text"
                 id="exteriorColor"
@@ -291,9 +410,10 @@
               />
             </div>
             <div>
-              <label for="interiorColor" class="block text-sm font-medium text-gray-700">
-                Дотор өнгө
-              </label>
+              <label
+                for="interiorColor"
+                class="block text-sm font-medium text-gray-700"
+              >Дотор өнгө</label>
               <input
                 type="text"
                 id="interiorColor"
@@ -302,9 +422,10 @@
               />
             </div>
             <div>
-              <label for="leasing" class="block text-sm font-medium text-gray-700">
-                Лизинг
-              </label>
+              <label
+                for="leasing"
+                class="block text-sm font-medium text-gray-700"
+              >Лизинг</label>
               <select
                 id="leasing"
                 name="leasing"
@@ -324,9 +445,10 @@
           </h3>
           <div class="space-y-3">
             <div>
-              <label for="carImages" class="block text-sm font-medium text-gray-700">
-                Зурагнууд (олон сонгож болно) *
-              </label>
+              <label
+                for="carImages"
+                class="block text-sm font-medium text-gray-700"
+              >Зурагнууд (олон сонгож болно) *</label>
               <input
                 type="file"
                 id="carImages"
@@ -336,18 +458,23 @@
                 class="mt-1 w-full text-sm"
                 required
               />
-              <p id="file-count-display" class="text-xs text-gray-500 mt-1">
+              <p
+                id="file-count-display"
+                class="text-xs text-gray-500 mt-1"
+              >
                 Одоогоор зураг сонгоогүй байна.
               </p>
               <p class="text-xs text-gray-400">
-                Нийт Base64 хэмжээ ойролцоогоор 800KB-аас ихгүй байхыг зөвлөж байна.
+                Нийт Base64 хэмжээ ойролцоогоор 800KB-аас ихгүй байхыг зөвлөж
+                байна (Firestore 1MB лимит).
               </p>
             </div>
             <div class="grid md:grid-cols-2 gap-4">
               <div>
-                <label for="youtubeUrl" class="block text-sm font-medium text-gray-700">
-                  YouTube URL
-                </label>
+                <label
+                  for="youtubeUrl"
+                  class="block text-sm font-medium text-gray-700"
+                >YouTube URL</label>
                 <input
                   type="url"
                   id="youtubeUrl"
@@ -357,9 +484,10 @@
                 />
               </div>
               <div>
-                <label for="tiktokUrl" class="block text-sm font-medium text-gray-700">
-                  TikTok линк
-                </label>
+                <label
+                  for="tiktokUrl"
+                  class="block text-sm font-medium text-gray-700"
+                >TikTok линк</label>
                 <input
                   type="url"
                   id="tiktokUrl"
@@ -394,9 +522,10 @@
           </h3>
           <div class="grid md:grid-cols-2 gap-4">
             <div>
-              <label for="sellerName" class="block text-sm font-medium text-gray-700">
-                Нэр / Дэлгүүр *
-              </label>
+              <label
+                for="sellerName"
+                class="block text-sm font-medium text-gray-700"
+              >Нэр / Дэлгүүр *</label>
               <input
                 type="text"
                 id="sellerName"
@@ -406,9 +535,10 @@
               />
             </div>
             <div>
-              <label for="sellerEmail" class="block text-sm font-medium text-gray-700">
-                Имэйл
-              </label>
+              <label
+                for="sellerEmail"
+                class="block text-sm font-medium text-gray-700"
+              >Имэйл</label>
               <input
                 type="email"
                 id="sellerEmail"
@@ -417,9 +547,10 @@
               />
             </div>
             <div>
-              <label for="sellerPhone" class="block text-sm font-medium text-gray-700">
-                Утас *
-              </label>
+              <label
+                for="sellerPhone"
+                class="block text-sm font-medium text-gray-700"
+              >Утас *</label>
               <input
                 type="tel"
                 id="sellerPhone"
@@ -430,27 +561,38 @@
               />
             </div>
             <div>
-              <span class="block text-sm font-medium text-gray-700 mb-1">
-                Холбогдох сувгууд
-              </span>
+              <span class="block text-sm font-medium text-gray-700 mb-1"
+              >Холбогдох сувгууд</span>
               <label class="inline-flex items-center mr-4 text-sm">
-                <input type="checkbox" name="messengerWhatsapp" class="mr-1" />
-                Whatsapp
+                <input
+                  type="checkbox"
+                  name="messengerWhatsapp"
+                  class="mr-1"
+                />Whatsapp
               </label>
               <label class="inline-flex items-center mr-4 text-sm">
-                <input type="checkbox" name="messengerTelegram" class="mr-1" />
-                Telegram
+                <input
+                  type="checkbox"
+                  name="messengerTelegram"
+                  class="mr-1"
+                />Telegram
               </label>
               <label class="inline-flex items-center text-sm">
-                <input type="checkbox" name="messengerFacebook" class="mr-1" />
-                Facebook Messenger
+                <input
+                  type="checkbox"
+                  name="messengerFacebook"
+                  class="mr-1"
+                />Facebook Messenger
               </label>
             </div>
           </div>
         </div>
 
         <div class="pt-2 flex items-center justify-between gap-4">
-          <p id="auth-status" class="text-xs text-gray-500">
+          <p
+            id="auth-status"
+            class="text-xs text-gray-500"
+          >
             Firebase-д холбогдож байна...
           </p>
           <button
@@ -466,27 +608,22 @@
     </div>
   </div>
 
-  <!-- ДЭЛГЭРЭНГҮЙ МОДАЛ (одоо хараахан дүүргэхгүй, зөвхөн layout) -->
+  <!-- ДЭЛГЭРЭНГҮЙ ХАРАХ МОДАЛ -->
   <div
-    id="car-detail-modal"
-    class="fixed inset-0 bg-black bg-opacity-60 hidden z-20 flex items-center justify-start px-4 py-6 overflow-y-auto"
+    id="detail-modal"
+    class="fixed inset-0 bg-black bg-opacity-60 hidden z-30 flex items-start justify-center px-4 py-6 overflow-y-auto"
   >
-    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full relative p-6 md:p-8">
-      <div class="flex items-center justify-between mb-4">
-        <h2 id="detail-title" class="text-2xl font-bold text-gray-900">
-          Машины дэлгэрэнгүй
-        </h2>
-        <button
-          id="detail-close-btn"
-          class="text-gray-400 hover:text-gray-600 text-2xl leading-none"
-        >
-          ×
-        </button>
-      </div>
-
-      <!-- Доторх хэсгийг дараа нь JS-ээр дүүргэж болно -->
-      <div class="text-sm text-gray-500">
-        Дараа нь энд дэлгэрэнгүй мэдээлэл рүүгээ холбоно.
+    <div
+      class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full relative p-6 md:p-8 mt-10 mb-10"
+    >
+      <button
+        id="detail-close-btn"
+        class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+      >
+        ×
+      </button>
+      <div id="detail-content">
+        <!-- JS-ээр дүүргэнэ -->
       </div>
     </div>
   </div>
@@ -494,7 +631,7 @@
   <!-- ALERT BOX -->
   <div
     id="custom-alert"
-    class="hidden fixed bottom-4 right-4 max-w-sm bg-red-600 text-white rounded-xl shadow-xl p-4 text-sm z-30"
+    class="hidden fixed bottom-4 right-4 max-w-sm bg-red-600 text-white rounded-xl shadow-xl p-4 text-sm z-40"
   >
     <p class="font-bold mb-1" id="alert-title">АЛДАА</p>
     <p id="alert-message"></p>
@@ -508,7 +645,23 @@
 
   <!-- FIREBASE + APP LOGIC -->
   <script type="module">
-    // ---------- ҮЙЛДВЭРЛЭГЧ / МОДЕЛЬ ЖАГСААЛТ ----------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      query,
+      orderBy,
+      onSnapshot,
+      serverTimestamp,
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import {
+      getAuth,
+      signInAnonymously,
+      onAuthStateChanged,
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+    // --- ҮЙЛДВЭРЛЭГЧ / МОДЕЛЬ ЖАГСААЛТ (ЗАР ОРУУЛАХ ФОРМ) ---
     const BRAND_MODELS = {
       Toyota: ["Prius 20", "Prius 30", "Prius 40", "Alphard", "Harrier", "Land Cruiser 200", "Land Cruiser 300"],
       Nissan: ["X-Trail", "Note", "Skyline", "Leaf"],
@@ -524,21 +677,7 @@
       Бусад: [],
     };
 
-    // ---------- FIREBASE IMPORT ----------
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      serverTimestamp,
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-    import {
-      getAuth,
-      signInAnonymously,
-      onAuthStateChanged,
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-    // ---------- FIREBASE CONFIG ----------
+    // --- FIREBASE CONFIG ---
     const firebaseConfig = {
       apiKey: "AIzaSyAEW1YnJ_xm_YnPzW9y1iSmdQIrgOsfjlA",
       authDomain: "carsmongolia-d410a.firebaseapp.com",
@@ -553,15 +692,13 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // ---------- UI ЭЛЕМЕНТҮҮД ----------
+    // --- DOM ЭЛЕМЕНТҮҮД ---
     const modal = document.getElementById("add-car-modal");
     const openBtn = document.getElementById("open-modal-btn");
     const closeBtn = document.getElementById("close-modal-btn");
     const form = document.getElementById("add-car-form");
-
     const fileInput = document.getElementById("carImages");
     const fileCountDisplay = document.getElementById("file-count-display");
-
     const submitBtn = document.getElementById("submit-car-btn");
     const authStatus = document.getElementById("auth-status");
 
@@ -569,12 +706,63 @@
     const alertTitle = document.getElementById("alert-title");
     const alertMessage = document.getElementById("alert-message");
 
-    const manufacturerSelect = document.getElementById("manufacturer");
-    const modelSelect = document.getElementById("model");
+    const listingsContainer = document.getElementById("listings-container");
+    const loadingMessage = document.getElementById("loading-message");
 
-    // ---------- ҮЙЛДВЭРЛЭГЧ / МОДЕЛЬ ДҮҮРГЭХ ----------
-    function populateManufacturers() {
-      manufacturerSelect.innerHTML = '<option value="">Сонгох</option>';
+    const filterManufacturer = document.getElementById("filter-manufacturer");
+    const filterModel = document.getElementById("filter-model");
+    const filterFuel = document.getElementById("filter-fuel");
+    const filterYearMin = document.getElementById("filter-year-min");
+    const filterYearMax = document.getElementById("filter-year-max");
+    const filterPriceMin = document.getElementById("filter-price-min");
+    const filterPriceMax = document.getElementById("filter-price-max");
+    const filterApply = document.getElementById("filter-apply");
+    const filterReset = document.getElementById("filter-reset");
+
+    const detailModal = document.getElementById("detail-modal");
+    const detailCloseBtn = document.getElementById("detail-close-btn");
+    const detailContent = document.getElementById("detail-content");
+
+    const addManufacturerSelect = document.getElementById("manufacturer");
+    const addModelSelect = document.getElementById("model");
+
+    // --- АЛЕРТ ФУНКЦ ---
+    function showAlert(message, type = "error") {
+      alertMessage.textContent = message;
+      alertTitle.textContent = type === "success" ? "АМЖИЛТ" : "АЛДАА";
+      alertBox.classList.remove("hidden", "bg-red-600", "bg-green-600");
+      alertBox.classList.add(type === "success" ? "bg-green-600" : "bg-red-600");
+    }
+
+    // --- MODAL ОНГОЙЛГОХ / ХААХ ---
+    openBtn.addEventListener("click", () => {
+      modal.classList.remove("hidden");
+    });
+    closeBtn.addEventListener("click", () => {
+      modal.classList.add("hidden");
+    });
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.classList.add("hidden");
+    });
+
+    // ДЭЛГЭРЭНГҮЙ МОДАЛ
+    detailCloseBtn.addEventListener("click", () => {
+      detailModal.classList.add("hidden");
+    });
+    detailModal.addEventListener("click", (e) => {
+      if (e.target === detailModal) detailModal.classList.add("hidden");
+    });
+
+    // --- ФАЙЛ СОНГОХ ---
+    fileInput.addEventListener("change", () => {
+      const count = fileInput.files.length;
+      fileCountDisplay.textContent =
+        count === 0 ? "Одоогоор зураг сонгоогүй байна." : `${count} файл сонгосон`;
+    });
+
+    // --- ADD FORM ҮЙЛДВЭРЛЭГЧ / МОДЕЛЬ ДҮҮРГЭХ ---
+    function populateAddManufacturers() {
+      addManufacturerSelect.innerHTML = '<option value="">Сонгох</option>';
 
       Object.keys(BRAND_MODELS)
         .filter((name) => name !== "Бусад")
@@ -583,21 +771,21 @@
           const opt = document.createElement("option");
           opt.value = maker;
           opt.textContent = maker;
-          manufacturerSelect.appendChild(opt);
+          addManufacturerSelect.appendChild(opt);
         });
 
       const other = document.createElement("option");
       other.value = "Бусад";
       other.textContent = "Бусад";
-      manufacturerSelect.appendChild(other);
+      addManufacturerSelect.appendChild(other);
     }
 
-    function populateModels() {
-      const maker = manufacturerSelect.value;
-      modelSelect.innerHTML = "";
+    function populateAddModels() {
+      const maker = addManufacturerSelect.value;
+      addModelSelect.innerHTML = "";
 
       if (!maker) {
-        modelSelect.innerHTML =
+        addModelSelect.innerHTML =
           '<option value="">Эхлээд үйлдвэрлэгч сонгоно уу</option>';
         return;
       }
@@ -605,53 +793,24 @@
       const models = BRAND_MODELS[maker] || [];
 
       if (models.length === 0) {
-        modelSelect.innerHTML =
-          '<option value="">Модель гараар бичнэ (дараа нь текстээр хадгалж өөрчилж болно)</option>';
+        addModelSelect.innerHTML =
+          '<option value="">Модель гараар бичнэ үү</option>';
         return;
       }
 
-      modelSelect.innerHTML = '<option value="">Модель сонгох</option>';
+      addModelSelect.innerHTML = '<option value="">Модель сонгох</option>';
       models.forEach((m) => {
         const opt = document.createElement("option");
         opt.value = m;
         opt.textContent = m;
-        modelSelect.appendChild(opt);
+        addModelSelect.appendChild(opt);
       });
     }
 
-    manufacturerSelect.addEventListener("change", populateModels);
-    populateManufacturers();
-    // эхний байдлаар үйлдвэрлэгч сонгогдоогүй тул модельд default текст байна
+    addManufacturerSelect.addEventListener("change", populateAddModels);
+    populateAddManufacturers();
 
-    // ---------- АЛЕРТ ----------
-    function showAlert(message, type = "error") {
-      alertMessage.textContent = message;
-      alertTitle.textContent = type === "success" ? "АМЖИЛТ" : "АЛДАА";
-      alertBox.classList.remove("hidden", "bg-red-600", "bg-green-600");
-      alertBox.classList.add(type === "success" ? "bg-green-600" : "bg-red-600");
-    }
-
-    // ---------- MODAL ОНГОЙЛГОХ / ХААХ ----------
-    openBtn.addEventListener("click", () => {
-      modal.classList.remove("hidden");
-    });
-
-    closeBtn.addEventListener("click", () => {
-      modal.classList.add("hidden");
-    });
-
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) modal.classList.add("hidden");
-    });
-
-    // ---------- ФАЙЛ СОНГОХ ----------
-    fileInput.addEventListener("change", () => {
-      const count = fileInput.files.length;
-      fileCountDisplay.textContent =
-        count === 0 ? "Одоогоор зураг сонгоогүй байна." : `${count} файл сонгосон`;
-    });
-
-    // ---------- FIREBASE AUTH (АНОНИМ) ----------
+    // --- FIREBASE AUTH (АНОНИМ) ---
     let currentUserId = null;
 
     async function startAuth() {
@@ -669,6 +828,7 @@
         currentUserId = user.uid;
         authStatus.textContent = "Firebase-т нэвтэрсэн. Зар оруулж болно.";
         submitBtn.disabled = false;
+        startRealtimeListener();
       } else {
         currentUserId = null;
         submitBtn.disabled = true;
@@ -677,12 +837,12 @@
       }
     });
 
-    // ---------- ЗУРГИЙГ BASE64 БОЛГОХ ----------
+    // --- ЗУРГИЙГ BASE64 БОЛГОХ ---
     function fileToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => {
-          const dataUrl = reader.result;
+          const dataUrl = reader.result; // data:image/jpeg;base64,...
           const base64 = String(dataUrl).split(",")[1];
           resolve({
             mimeType: file.type,
@@ -694,12 +854,302 @@
       });
     }
 
-    // ---------- ФОРМ ИЛГЭЭХ ----------
+    // --- REALTIME LISTENER ---
+    let allCars = [];
+
+    function startRealtimeListener() {
+      const carsRef = collection(db, "cars");
+      const q = query(carsRef, orderBy("createdAt", "desc"));
+
+      onSnapshot(
+        q,
+        (snapshot) => {
+          allCars = [];
+          snapshot.forEach((doc) => {
+            allCars.push({
+              id: doc.id,
+              ...doc.data(),
+            });
+          });
+          loadingMessage.classList.add("hidden");
+          populateFilterOptions();
+          renderList();
+        },
+        (err) => {
+          console.error("onSnapshot error:", err);
+          loadingMessage.textContent = "Дата ачаалахад алдаа гарлаа.";
+        }
+      );
+    }
+
+    // --- FILTER OPTIONS ДҮҮРГЭХ ---
+    function populateFilterOptions() {
+      const manufacturers = new Set();
+      allCars.forEach((c) => {
+        if (c.manufacturer) manufacturers.add(c.manufacturer);
+      });
+
+      const currentMan = filterManufacturer.value;
+      filterManufacturer.innerHTML = '<option value="">Бүгд</option>';
+      Array.from(manufacturers)
+        .sort((a, b) => a.localeCompare(b, "mn"))
+        .forEach((m) => {
+          const opt = document.createElement("option");
+          opt.value = m;
+          opt.textContent = m;
+          filterManufacturer.appendChild(opt);
+        });
+      if (currentMan && manufacturers.has(currentMan)) {
+        filterManufacturer.value = currentMan;
+      }
+
+      populateModelOptions();
+    }
+
+    function populateModelOptions() {
+      const man = filterManufacturer.value;
+      const models = new Set();
+      allCars.forEach((c) => {
+        if (man && c.manufacturer !== man) return;
+        if (c.model) models.add(c.model);
+      });
+
+      const currentModel = filterModel.value;
+      filterModel.innerHTML = '<option value="">Бүгд</option>';
+      Array.from(models)
+        .sort((a, b) => a.localeCompare(b, "mn"))
+        .forEach((m) => {
+          const opt = document.createElement("option");
+          opt.value = m;
+          opt.textContent = m;
+          filterModel.appendChild(opt);
+        });
+
+      if (currentModel && models.has(currentModel)) {
+        filterModel.value = currentModel;
+      }
+    }
+
+    filterManufacturer.addEventListener("change", () => {
+      populateModelOptions();
+    });
+
+    filterApply.addEventListener("click", () => {
+      renderList();
+    });
+
+    filterReset.addEventListener("click", () => {
+      filterManufacturer.value = "";
+      filterModel.value = "";
+      filterFuel.value = "";
+      filterYearMin.value = "";
+      filterYearMax.value = "";
+      filterPriceMin.value = "";
+      filterPriceMax.value = "";
+      renderList();
+    });
+
+    // --- LIST РЕНДЕР ---
+    function renderList() {
+      listingsContainer.innerHTML = "";
+
+      const man = filterManufacturer.value;
+      const model = filterModel.value;
+      const fuel = filterFuel.value;
+      const yMin = filterYearMin.value ? Number(filterYearMin.value) : null;
+      const yMax = filterYearMax.value ? Number(filterYearMax.value) : null;
+      const pMin = filterPriceMin.value ? Number(filterPriceMin.value) : null;
+      const pMax = filterPriceMax.value ? Number(filterPriceMax.value) : null;
+
+      const filtered = allCars.filter((car) => {
+        if (man && car.manufacturer !== man) return false;
+        if (model && car.model !== model) return false;
+        if (fuel && car.fuelType !== fuel) return false;
+        if (yMin !== null && car.year && car.year < yMin) return false;
+        if (yMax !== null && car.year && car.year > yMax) return false;
+        if (pMin !== null && car.price && car.price < pMin) return false;
+        if (pMax !== null && car.price && car.price > pMax) return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        listingsContainer.innerHTML = `
+          <div class="col-span-full text-center text-gray-500 text-sm py-10">
+            Таны сонгосон нөхцлөөр зар олдсонгүй.
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach((car) => {
+        const imgData =
+          car.images && car.images.length
+            ? `data:${car.images[0].mimeType};base64,${car.images[0].data}`
+            : null;
+
+        const card = document.createElement("div");
+        card.className =
+          "bg-white rounded-xl shadow hover:shadow-lg transition cursor-pointer overflow-hidden flex flex-col";
+        card.addEventListener("click", () => openDetailModal(car));
+
+        card.innerHTML = `
+          <div class="h-40 bg-gray-200 overflow-hidden">
+            ${
+              imgData
+                ? `<img src="${imgData}" class="w-full h-full object-cover" alt="${car.manufacturer || ""} ${car.model || ""}">`
+                : `<div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">Зураг байхгүй</div>`
+            }
+          </div>
+          <div class="p-4 flex flex-col gap-2 flex-1">
+            <div class="flex items-center justify-between gap-2">
+              <h3 class="font-bold text-gray-900 truncate">
+                ${(car.manufacturer || "") + " " + (car.model || "")}
+              </h3>
+              <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">
+                ${car.fuelType || "-"}
+              </span>
+            </div>
+            <div class="text-xs text-gray-500 flex flex-wrap gap-x-4 gap-y-1">
+              <span>Он: ${car.year || "-"}</span>
+              <span>Гүйлт: ${
+                car.mileage ? car.mileage.toLocaleString("en-US") + " км" : "-"
+              }</span>
+            </div>
+            <div class="mt-auto pt-2 border-t">
+              <p class="text-lg font-extrabold text-red-600">
+                ${
+                  car.price
+                    ? car.price.toLocaleString("en-US") + " сая ₮"
+                    : "Үнэтэйгээ ярилцана"
+                }
+              </p>
+            </div>
+          </div>
+        `;
+
+        listingsContainer.appendChild(card);
+      });
+    }
+
+    // --- ДЭЛГЭРЭНГҮЙ МОДАЛ РЕНДЕР ---
+    function openDetailModal(car) {
+      const imgData =
+        car.images && car.images.length
+          ? `data:${car.images[0].mimeType};base64,${car.images[0].data}`
+          : null;
+
+      const extraImagesHtml =
+        car.images && car.images.length > 1
+          ? `
+        <div class="mt-3 grid grid-cols-4 gap-2">
+          ${car.images
+            .slice(1)
+            .map(
+              (img) => `
+            <img
+              src="data:${img.mimeType};base64,${img.data}"
+              class="w-full h-16 object-cover rounded"
+            />
+          `
+            )
+            .join("")}
+        </div>
+      `
+          : "";
+
+      detailContent.innerHTML = `
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <div class="h-56 bg-gray-200 rounded-xl overflow-hidden">
+              ${
+                imgData
+                  ? `<img src="${imgData}" class="w-full h-full object-cover">`
+                  : `<div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">Зураг байхгүй</div>`
+              }
+            </div>
+            ${extraImagesHtml}
+          </div>
+          <div class="space-y-3 text-sm">
+            <h2 class="text-xl font-bold text-gray-900">
+              ${(car.manufacturer || "") + " " + (car.model || "")}
+            </h2>
+            <p class="text-2xl font-extrabold text-red-600">
+              ${
+                car.price
+                  ? car.price.toLocaleString("en-US") + " сая ₮"
+                  : "Үнэтэйгээ ярилцана"
+              }
+            </p>
+
+            <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-gray-700">
+              <p>Он: <span class="font-semibold">${car.year || "-"}</span></p>
+              <p>Орж ирсэн он: <span class="font-semibold">${
+                car.importYear || "-"
+              }</span></p>
+              <p>Гүйлт: <span class="font-semibold">${
+                car.mileage
+                  ? car.mileage.toLocaleString("en-US") + " км"
+                  : "-"
+              }</span></p>
+              <p>Түлш: <span class="font-semibold">${
+                car.fuelType || "-"
+              }</span></p>
+              <p>Хөтлөгч: <span class="font-semibold">${
+                car.driveType || "-"
+              }</span></p>
+              <p>Хурдны хайрцаг: <span class="font-semibold">${
+                car.transmission || "-"
+              }</span></p>
+              <p>Гадна өнгө: <span class="font-semibold">${
+                car.exteriorColor || "-"
+              }</span></p>
+              <p>Дотор өнгө: <span class="font-semibold">${
+                car.interiorColor || "-"
+              }</span></p>
+              <p>Лизинг: <span class="font-semibold">${
+                car.leasing || "-"
+              }</span></p>
+              <p>Нөхцөл: <span class="font-semibold">${
+                car.condition || "-"
+              }</span></p>
+            </div>
+
+            <div class="pt-2 border-t">
+              <h3 class="font-semibold text-gray-800 mb-1">
+                Зарын тайлбар
+              </h3>
+              <p class="text-gray-700 whitespace-pre-line">
+                ${car.description || "-"}
+              </p>
+            </div>
+
+            <div class="pt-2 border-т">
+              <h3 class="font-semibold text-gray-800 mb-1">
+                Холбоо барих
+              </h3>
+              <p>Нэр / дэлгүүр: <span class="font-semibold">${
+                car.sellerName || "-"
+              }</span></p>
+              <p>Утас: <span class="font-semibold">${
+                car.sellerPhone || "-"
+              }</span></p>
+              <p>Имэйл: <span class="font-semibold">${
+                car.sellerEmail || "-"
+              }</span></p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      detailModal.classList.remove("hidden");
+    }
+
+    // --- ФОРМ SUBMIT ---
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       if (!currentUserId) {
-        showAlert("Firebase-т нэвтэртэл жаахан хүлээгээд дахин оролдоно уу.");
+        showAlert("Firebase-т нэвтэртэл түр хүлээгээд дахин оролдоно уу.");
         return;
       }
 
@@ -708,7 +1158,6 @@
         showAlert("Ядаж нэг зураг заавал сонгоно уу.");
         return;
       }
-
       if (files.length > 6) {
         showAlert("Одоогоор хамгийн ихдээ 6 зураг оруулах боломжтой.");
         return;
@@ -726,9 +1175,8 @@
 
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-
           if (!file.type.startsWith("image/")) {
-            showAlert("Зөвхөн зураг (JPG/PNG) файл оруулна уу.");
+            showAlert("Зөвхөн зураг файл оруулна уу.");
             throw new Error("NotImage");
           }
 
@@ -787,12 +1235,12 @@
 
         form.reset();
         fileCountDisplay.textContent = "Одоогоор зураг сонгоогүй байна.";
-        modelSelect.innerHTML =
+        addModelSelect.innerHTML =
           '<option value="">Эхлээд үйлдвэрлэгч сонгоно уу</option>';
         modal.classList.add("hidden");
       } catch (err) {
         if (err.message === "TooBig" || err.message === "NotImage") {
-          // аль хэдийн алерт гаргасан
+          // аль хэдийн алерт гарсан
         } else {
           console.error(err);
           showAlert("Зар илгээхэд алдаа гарлаа: " + (err.message || err));
