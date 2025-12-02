@@ -1,7 +1,4 @@
 <!DOCTYPE html>
-<script type="module">
-  import { CAR_DATA } from "./CAR_DATA.js";
-</script>
 <html lang="mn">
 <head>
   <meta charset="UTF-8" />
@@ -672,64 +669,7 @@
 
   <!-- FIREBASE + APP LOGIC -->
   <script type="module">
-    // --- ADD FORM Үйлдвэрлэгч / Модель --- 
-
-const addManufacturerSelect = document.getElementById("manufacturer");
-const addModelSelect = document.getElementById("model");
-
-/* Үйлдвэрлэгч drop-down дүүргэх */
-function populateManufacturers() {
-  addManufacturerSelect.innerHTML = '<option value="">Сонгох</option>';
-
-  Object.keys(CAR_DATA)
-    .sort((a, b) => a.localeCompare(b, "mn"))
-    .forEach(maker => {
-      const opt = document.createElement("option");
-      opt.value = maker;
-      opt.textContent = maker;
-      addManufacturerSelect.appendChild(opt);
-    });
-
-  // нэмэлт гар бичдэг сонголт
-  const other = document.createElement("option");
-  other.value = "Бусад";
-  other.textContent = "Бусад";
-  addManufacturerSelect.appendChild(other);
-}
-
-/* Үйлдвэрлэгч солигдоход модель дүүргэх */
-function populateModels() {
-  const maker = addManufacturerSelect.value;
-  addModelSelect.innerHTML = "";
-
-  if (!maker) {
-    addModelSelect.innerHTML =
-      '<option value="">Эхлээд үйлдвэрлэгч сонгоно уу</option>';
-    return;
-  }
-
-  const models = CAR_DATA[maker] || [];
-
-  if (models.length === 0) {
-    addModelSelect.innerHTML =
-      '<option value="">Модель гараар бичнэ үү</option>';
-    return;
-  }
-
-  addModelSelect.innerHTML = '<option value="">Модель сонгох</option>';
-
-  models.forEach(m => {
-    const opt = document.createElement("option");
-    opt.value = m;
-    opt.textContent = m;
-    addModelSelect.appendChild(opt);
-  });
-}
-
-addManufacturerSelect.addEventListener("change", populateModels);
-
-// эхлээд үйлдвэрлэгч жагсаалтыг нэг удаа дүүргэнэ
-  populateManufacturers();
+    import { CAR_DATA } from "./data/CAR_DATA.js";
   // ---------- FIREBASE IMPORT-УУД ----------
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
   import {
@@ -956,6 +896,65 @@ addManufacturerSelect.addEventListener("change", populateModels);
     });
 
     // --- ФАЙЛ СОНГОХ ---
+    // --- ADD FORM Үйлдвэрлэгч / Модель --- 
+
+const addManufacturerSelect = document.getElementById("manufacturer");
+const addModelSelect = document.getElementById("model");
+
+/* Үйлдвэрлэгч drop-down дүүргэх */
+function populateManufacturers() {
+  addManufacturerSelect.innerHTML = '<option value="">Сонгох</option>';
+
+  Object.keys(CAR_DATA)
+    .sort((a, b) => a.localeCompare(b, "mn"))
+    .forEach(maker => {
+      const opt = document.createElement("option");
+      opt.value = maker;
+      opt.textContent = maker;
+      addManufacturerSelect.appendChild(opt);
+    });
+
+  // нэмэлт гар бичдэг сонголт
+  const other = document.createElement("option");
+  other.value = "Бусад";
+  other.textContent = "Бусад";
+  addManufacturerSelect.appendChild(other);
+}
+
+/* Үйлдвэрлэгч солигдоход модель дүүргэх */
+function populateModels() {
+  const maker = addManufacturerSelect.value;
+  addModelSelect.innerHTML = "";
+
+  if (!maker) {
+    addModelSelect.innerHTML =
+      '<option value="">Эхлээд үйлдвэрлэгч сонгоно уу</option>';
+    return;
+  }
+
+  const models = CAR_DATA[maker] || [];
+
+  if (models.length === 0) {
+    addModelSelect.innerHTML =
+      '<option value="">Модель гараар бичнэ үү</option>';
+    return;
+  }
+
+  addModelSelect.innerHTML = '<option value="">Модель сонгох</option>';
+
+  models.forEach(m => {
+    const opt = document.createElement("option");
+    opt.value = m;
+    opt.textContent = m;
+    addModelSelect.appendChild(opt);
+  });
+}
+
+addManufacturerSelect.addEventListener("change", populateModels);
+
+// эхлээд үйлдвэрлэгч жагсаалтыг нэг удаа дүүргэнэ
+populateManufacturers();
+
      form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
